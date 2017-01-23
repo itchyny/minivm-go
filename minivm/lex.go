@@ -2,24 +2,29 @@ package minivm
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"text/scanner"
 )
 
 type Lexer struct {
-	scanner.Scanner
-	result Node
+	scanner scanner.Scanner
+	result  Node
+}
+
+func (lexer *Lexer) Init(reader io.Reader) {
+	lexer.scanner.Init(reader)
 }
 
 func (lexer *Lexer) Lex(lval *yySymType) int {
-	r := lexer.Scan()
+	r := lexer.scanner.Scan()
 	token := int(r)
 	if token == scanner.Int {
 		token = INT
 	} else if token == scanner.Float {
 		token = FLOAT
 	} else if token == scanner.Ident {
-		switch lexer.TokenText() {
+		switch lexer.scanner.TokenText() {
 		case "print":
 			token = PRINT
 		}
@@ -32,7 +37,7 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 	} else if r == '/' {
 		token = DIVIDE
 	}
-	lval.token = Token{token: token, literal: lexer.TokenText()}
+	lval.token = Token{token: token, literal: lexer.scanner.TokenText()}
 	return token
 }
 
