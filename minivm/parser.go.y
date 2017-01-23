@@ -1,24 +1,7 @@
 %{
 package minivm
 
-import (
-	"strconv"
-)
-
-type Node interface{}
-
-type Token struct {
-	literal string
-	token   int
-}
-
-type IntExpr struct {
-	value int64
-}
-
-type FloatExpr struct {
-	value float64
-}
+import "strconv"
 
 func Parse(yylex yyLexer) int {
 	return yyParse(yylex)
