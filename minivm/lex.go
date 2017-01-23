@@ -12,7 +12,8 @@ type Lexer struct {
 }
 
 func (lexer *Lexer) Lex(lval *yySymType) int {
-	token := int(lexer.Scan())
+	r := lexer.Scan()
+	token := int(r)
 	if token == scanner.Int {
 		token = INT
 	} else if token == scanner.Float {
@@ -22,6 +23,14 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		case "print":
 			token = PRINT
 		}
+	} else if r == '+' {
+		token = PLUS
+	} else if r == '-' {
+		token = MINUS
+	} else if r == '*' {
+		token = TIMES
+	} else if r == '/' {
+		token = DIVIDE
 	}
 	lval.token = Token{token: token, literal: lexer.TokenText()}
 	return token

@@ -15,7 +15,11 @@ func Parse(yylex yyLexer) int {
 
 %type<node> program statement expression
 %token<token> PRINT
+%token<token> PLUS MINUS TIMES DIVIDE
 %token<token> INT FLOAT
+
+%left PLUS MINUS
+%left TIMES DIVIDE
 
 %%
 
@@ -33,7 +37,23 @@ statement
 	}
 
 expression
-	: INT
+	: expression PLUS expression
+	{
+		$$ = BinOpExpr{op: PLUS, left: $1, right: $3}
+	}
+	| expression MINUS expression
+	{
+		$$ = BinOpExpr{op: MINUS, left: $1, right: $3}
+	}
+	| expression TIMES expression
+	{
+		$$ = BinOpExpr{op: TIMES, left: $1, right: $3}
+	}
+	| expression DIVIDE expression
+	{
+		$$ = BinOpExpr{op: DIVIDE, left: $1, right: $3}
+	}
+	| INT
 	{
 		value, err := strconv.ParseInt($1.literal, 10, 64)
 		if err != nil {

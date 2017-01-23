@@ -11,6 +11,12 @@ type PrintStmt struct {
 	expr Node
 }
 
+type BinOpExpr struct {
+	op    int
+	left  Node
+	right Node
+}
+
 type IntExpr struct {
 	value int64
 }

@@ -12,6 +12,14 @@ func (env Env) Execute() {
 		case OpPrint:
 			value := env.stack.Pop()
 			fmt.Printf("%v\n", value.Value())
+		case OpAdd:
+			env.stack.Push(env.stack.Pop().add(env.stack.Pop()))
+		case OpSub:
+			env.stack.Push(env.stack.Pop().sub(env.stack.Pop()))
+		case OpMul:
+			env.stack.Push(env.stack.Pop().mul(env.stack.Pop()))
+		case OpDiv:
+			env.stack.Push(env.stack.Pop().div(env.stack.Pop()))
 		case OpLoad:
 			env.stack.Push(env.constant[code.Operand])
 		default:

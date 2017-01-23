@@ -34,6 +34,24 @@ func (env *Env) codegen(node Node) {
 	case PrintStmt:
 		env.codegen(node.expr)
 		env.addCode(Code{OpCode: OpPrint})
+	case BinOpExpr:
+		env.codegen(node.left)
+		env.codegen(node.right)
+		var op int8
+		switch node.op {
+		case PLUS:
+			op = OpAdd
+		case MINUS:
+			op = OpSub
+		case TIMES:
+			op = OpMul
+		case DIVIDE:
+			op = OpDiv
+		default:
+			fmt.Println("unknown binary operator")
+			os.Exit(1)
+		}
+		env.addCode(Code{OpCode: op})
 	case IntExpr:
 		env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{node.value})})
 	case FloatExpr:

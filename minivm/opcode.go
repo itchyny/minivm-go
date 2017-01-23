@@ -3,6 +3,10 @@ package minivm
 const (
 	OpPrint = iota
 	OpLoad
+	OpAdd
+	OpSub
+	OpMul
+	OpDiv
 )
 
 type Code struct {

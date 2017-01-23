@@ -2,6 +2,10 @@ package minivm
 
 type Value interface {
 	Value() interface{}
+	add(Value) Value
+	sub(Value) Value
+	mul(Value) Value
+	div(Value) Value
 }
 
 type VInt struct {
@@ -12,10 +16,98 @@ func (v VInt) Value() interface{} {
 	return v.value
 }
 
+func (rhs VInt) add(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VInt{value: lhs.value + rhs.value}
+	case VFloat:
+		return VFloat{value: lhs.value + float64(rhs.value)}
+	default:
+		panic("invalid value type for add")
+	}
+}
+
+func (rhs VInt) sub(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VInt{value: lhs.value - rhs.value}
+	case VFloat:
+		return VFloat{value: lhs.value - float64(rhs.value)}
+	default:
+		panic("invalid value type for sub")
+	}
+}
+
+func (rhs VInt) mul(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VInt{value: lhs.value * rhs.value}
+	case VFloat:
+		return VFloat{value: lhs.value * float64(rhs.value)}
+	default:
+		panic("invalid value type for mul")
+	}
+}
+
+func (rhs VInt) div(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VInt{value: lhs.value / rhs.value}
+	case VFloat:
+		return VFloat{value: lhs.value / float64(rhs.value)}
+	default:
+		panic("invalid value type for div")
+	}
+}
+
 type VFloat struct {
 	value float64
 }
 
 func (v VFloat) Value() interface{} {
 	return v.value
+}
+
+func (rhs VFloat) add(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VFloat{value: float64(lhs.value) + rhs.value}
+	case VFloat:
+		return VFloat{value: lhs.value + rhs.value}
+	default:
+		panic("invalid value type for add")
+	}
+}
+
+func (rhs VFloat) sub(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VFloat{value: float64(lhs.value) - rhs.value}
+	case VFloat:
+		return VFloat{value: lhs.value - rhs.value}
+	default:
+		panic("invalid value type for sub")
+	}
+}
+
+func (rhs VFloat) mul(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VFloat{value: float64(lhs.value) * rhs.value}
+	case VFloat:
+		return VFloat{value: lhs.value * rhs.value}
+	default:
+		panic("invalid value type for mul")
+	}
+}
+
+func (rhs VFloat) div(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VFloat{value: float64(lhs.value) / rhs.value}
+	case VFloat:
+		return VFloat{value: lhs.value / rhs.value}
+	default:
+		panic("invalid value type for div")
+	}
 }
