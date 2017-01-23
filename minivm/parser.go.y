@@ -13,16 +13,23 @@ func Parse(yylex yyLexer) int {
 	token Token
 }
 
-%type<node> program expression
+%type<node> program statement expression
+%token<token> PRINT
 %token<token> INT FLOAT
 
 %%
 
 program
-	: expression
+	: statement
 	{
 		$$ = $1
 		yylex.(*Lexer).result = $$
+	}
+
+statement
+	: PRINT expression
+	{
+		$$ = PrintStmt{expr: $2}
 	}
 
 expression

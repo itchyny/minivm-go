@@ -7,6 +7,10 @@ type Token struct {
 	token   int
 }
 
+type PrintStmt struct {
+	expr Node
+}
+
 type IntExpr struct {
 	value int64
 }

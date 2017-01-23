@@ -31,12 +31,13 @@ func (env *Env) addConst(value Value) int64 {
 
 func (env *Env) codegen(node Node) {
 	switch node := node.(type) {
+	case PrintStmt:
+		env.codegen(node.expr)
+		env.addCode(Code{OpCode: OpPrint})
 	case IntExpr:
 		env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{node.value})})
-		env.addCode(Code{OpCode: OpPrint})
 	case FloatExpr:
 		env.addCode(Code{OpLoad, env.addConst(VFloat{node.value})})
-		env.addCode(Code{OpCode: OpPrint})
 	default:
 		fmt.Println("unknown node type")
 		os.Exit(1)
