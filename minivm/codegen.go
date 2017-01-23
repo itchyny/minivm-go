@@ -9,7 +9,7 @@ type Env struct {
 	pc       int
 	code     []Code
 	constant []Value
-	stack    []Value
+	stack    Stack
 }
 
 func Codegen(node Node) *Env {
