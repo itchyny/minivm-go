@@ -16,6 +16,10 @@ type IntExpr struct {
 	value int64
 }
 
+type FloatExpr struct {
+	value float64
+}
+
 func Parse(yylex yyLexer) int {
 	return yyParse(yylex)
 }
@@ -27,7 +31,7 @@ func Parse(yylex yyLexer) int {
 }
 
 %type<node> program expression
-%token<token> INT
+%token<token> INT FLOAT
 
 %%
 
@@ -46,6 +50,14 @@ expression
 			yylex.Error("invalid integer literal: " + $1.literal)
 		}
 		$$ = IntExpr{value: value}
+	}
+	| FLOAT
+	{
+		value, err := strconv.ParseFloat($1.literal, 64)
+		if err != nil {
+			yylex.Error("invalid float literal: " + $1.literal)
+		}
+		$$ = FloatExpr{value: value}
 	}
 
 %%
