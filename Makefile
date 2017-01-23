@@ -18,8 +18,18 @@ test: testdeps build
 testdeps:
 	go get -d -v -t ./...
 
+LINT_RET = .golint.txt
+lint: lintdeps build
+	rm -f $(LINT_RET)
+	golint ./... | tee $(LINT_RET)
+	test ! -s $(LINT_RET)
+
+lintdeps:
+	go get -d -v -t ./...
+	go get -u github.com/golang/lint/golint
+
 clean:
 	rm -rf ./$(BUILD)
 	go clean
 
-.PHONY: build test testdeps clean
+.PHONY: build test testdeps lint lintdeps clean
