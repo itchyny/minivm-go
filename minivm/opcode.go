@@ -2,6 +2,7 @@ package minivm
 
 const (
 	OpPrint = iota
+	OpJmp
 	OpJmpNot
 	OpLetGVar
 	OpLoadGVar

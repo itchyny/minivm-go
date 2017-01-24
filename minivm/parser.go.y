@@ -13,8 +13,8 @@ func Parse(yylex yyLexer) int {
 	token Token
 }
 
-%type<node> program statements statement expression
-%token<token> IF END PRINT
+%type<node> program statements statement else_opt expression
+%token<token> IF ELSE END PRINT
 %token<token> EQ LPAREN RPAREN PLUS MINUS TIMES DIVIDE
 %token<token> INT FLOAT TRUE FALSE IDENT CR
 
@@ -42,9 +42,9 @@ statements
 	}
 
 statement
-	: IF expression sep statements sep END
+	: IF expression sep statements sep else_opt END
 	{
-		$$ = IfStmt{expr: $2, stmts: $4}
+		$$ = IfStmt{expr: $2, stmts: $4, elsestmts: $6}
 	}
 	| IDENT EQ expression
 	{
@@ -53,6 +53,16 @@ statement
 	| PRINT expression
 	{
 		$$ = PrintStmt{expr: $2}
+	}
+
+else_opt
+	:
+	{
+		$$ = nil
+	}
+	| ELSE sep statements sep
+	{
+		$$ = $3
 	}
 
 expression

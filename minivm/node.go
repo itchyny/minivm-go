@@ -12,8 +12,9 @@ type Statements struct {
 }
 
 type IfStmt struct {
-	expr  Node
-	stmts Node
+	expr      Node
+	stmts     Node
+	elsestmts Node
 }
 
 type LetStmt struct {

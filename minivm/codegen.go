@@ -40,11 +40,19 @@ func (env *Env) codegen(node Node) int {
 		}
 	case IfStmt:
 		count += env.codegen(node.expr)
-		jmp := env.addCode(Code{OpCode: OpJmpNot})
+		jmpnot := env.addCode(Code{OpCode: OpJmpNot})
 		count++
-		diff := env.codegen(node.stmts)
-		env.code[jmp].Operand = diff
-		count += diff
+		count += env.codegen(node.stmts)
+		if node.elsestmts != nil {
+			stmts, _ := node.elsestmts.(Statements)
+			jmp := env.addCode(Code{OpCode: OpJmp})
+			count++
+			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
+			count += env.codegen(stmts)
+			env.code[jmp].Operand = len(env.code) - jmp - 1
+		} else {
+			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
+		}
 	case LetStmt:
 		i := env.vars.lookup(node.ident)
 		if i < 0 {
