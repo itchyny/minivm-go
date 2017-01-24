@@ -19,18 +19,16 @@ func TestMain(t *testing.T) {
 			stderr := new(bytes.Buffer)
 			cmd.Stderr = stderr
 			output, err := cmd.Output()
+			outfile := strings.TrimSuffix(path, filepath.Ext(path)) + ".out"
+			expected, err := ioutil.ReadFile(outfile)
+			errfile := strings.TrimSuffix(path, filepath.Ext(path)) + ".err"
+			errexpected, _ := ioutil.ReadFile(errfile)
 			if err != nil {
-				t.Errorf("FAIL: execution failed: " + path + ": " + err.Error() + ", " + string(output) + " " + stderr.String())
+				t.Errorf("FAIL: error on reading output file: " + outfile)
+			} else if string(output) == string(expected) && stderr.String() == string(errexpected) {
+				t.Logf("PASS: " + path + "\n")
 			} else {
-				outfile := strings.TrimSuffix(path, filepath.Ext(path)) + ".out"
-				expected, err := ioutil.ReadFile(outfile)
-				if err != nil {
-					t.Errorf("FAIL: error on reading output file: " + outfile)
-				} else if string(output) == string(expected) {
-					t.Logf("PASS: " + path + "\n")
-				} else {
-					t.Errorf("FAIL: output differs: " + path + "\nOutput:" + string(output) + "\nExpected:" + string(expected))
-				}
+				t.Errorf("FAIL: output differs: " + path + "\nOutput:" + string(output) + "\nExpected:" + string(expected))
 			}
 		}
 		return nil
