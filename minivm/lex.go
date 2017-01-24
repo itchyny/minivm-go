@@ -50,7 +50,7 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 }
 
 func (lexer *Lexer) Error(err string) {
-	fmt.Println(err)
+	fmt.Println(lexer.scanner.Pos().String() + ": " + err)
 	os.Exit(1)
 }
 
