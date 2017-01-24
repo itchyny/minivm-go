@@ -1,0 +1,8 @@
+a = 30
+if false
+  a = 10
+  b = 20
+end
+
+print a
+print b
