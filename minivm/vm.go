@@ -30,7 +30,7 @@ func (env Env) Execute() {
 		case OpLoadGVar:
 			value := env.vars.vars[code.Operand].value
 			if value == nil {
-				fmt.Println("variable not initialized: " + env.vars.vars[code.Operand].name)
+				fmt.Fprintln(os.Stderr, "variable not initialized: "+env.vars.vars[code.Operand].name)
 				os.Exit(1)
 			}
 			env.stack.Push(value)
@@ -41,13 +41,13 @@ func (env Env) Execute() {
 		case OpLoad:
 			env.stack.Push(env.constant[code.Operand])
 		default:
-			fmt.Println("unknown opcode: " + strconv.Itoa(int(code.OpCode)))
+			fmt.Fprintln(os.Stderr, "unknown opcode: "+strconv.Itoa(int(code.OpCode)))
 			os.Exit(1)
 		}
 		env.pc++
 	}
 	if !env.stack.Empty() {
-		fmt.Println("stack not consumed")
+		fmt.Fprintln(os.Stderr, "stack not consumed")
 		os.Exit(1)
 	}
 }

@@ -48,7 +48,7 @@ func (env *Env) codegen(node Node) int64 {
 	case LetStmt:
 		i := env.vars.lookup(node.ident)
 		if i < 0 {
-			fmt.Println("unknown variable: " + node.ident)
+			fmt.Fprintln(os.Stderr, "unknown variable: "+node.ident)
 			os.Exit(1)
 		}
 		count += env.codegen(node.expr)
@@ -72,7 +72,7 @@ func (env *Env) codegen(node Node) int64 {
 		case DIVIDE:
 			op = OpDiv
 		default:
-			fmt.Println("unknown binary operator")
+			fmt.Fprintln(os.Stderr, "unknown binary operator")
 			os.Exit(1)
 		}
 		env.addCode(Code{OpCode: op})
@@ -80,7 +80,7 @@ func (env *Env) codegen(node Node) int64 {
 	case Ident:
 		i := env.vars.lookup(node.name)
 		if i < 0 {
-			fmt.Println("unknown variable: " + node.name)
+			fmt.Fprintln(os.Stderr, "unknown variable: "+node.name)
 			os.Exit(1)
 		}
 		env.addCode(Code{OpCode: OpLoadGVar, Operand: i})
@@ -100,7 +100,7 @@ func (env *Env) codegen(node Node) int64 {
 		env.addCode(Code{OpLoad, env.addConst(VFloat{node.value})})
 		count++
 	default:
-		fmt.Printf("unknown node type: %+v\n", node)
+		fmt.Fprintf(os.Stderr, "unknown node type: %+v\n", node)
 		os.Exit(1)
 	}
 	return count
