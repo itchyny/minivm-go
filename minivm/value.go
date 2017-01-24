@@ -8,6 +8,30 @@ type Value interface {
 	div(Value) Value
 }
 
+type VBool struct {
+	value bool
+}
+
+func (v VBool) Value() interface{} {
+	return v.value
+}
+
+func (rhs VBool) add(lhs Value) Value {
+	panic("you cannot add boolean")
+}
+
+func (rhs VBool) sub(lhs Value) Value {
+	panic("you cannot subtract boolean")
+}
+
+func (rhs VBool) mul(lhs Value) Value {
+	panic("you cannot multiply by boolean")
+}
+
+func (rhs VBool) div(lhs Value) Value {
+	panic("you cannot divide by boolean")
+}
+
 type VInt struct {
 	value int64
 }

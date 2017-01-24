@@ -28,6 +28,10 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		switch lexer.scanner.TokenText() {
 		case "print":
 			token = PRINT
+		case "true":
+			token = TRUE
+		case "false":
+			token = FALSE
 		default:
 			token = IDENT
 		}

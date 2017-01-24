@@ -4,6 +4,8 @@ const (
 	OpPrint = iota
 	OpLetGVar
 	OpLoadGVar
+	OpLoadT
+	OpLoadF
 	OpLoad
 	OpAdd
 	OpSub

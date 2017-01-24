@@ -73,6 +73,12 @@ func (env *Env) codegen(node Node) {
 			os.Exit(1)
 		}
 		env.addCode(Code{OpCode: OpLoadGVar, Operand: i})
+	case BoolExpr:
+		if node.value {
+			env.addCode(Code{OpCode: OpLoadT})
+		} else {
+			env.addCode(Code{OpCode: OpLoadF})
+		}
 	case IntExpr:
 		env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{node.value})})
 	case FloatExpr:

@@ -30,6 +30,10 @@ type Ident struct {
 	name string
 }
 
+type BoolExpr struct {
+	value bool
+}
+
 type IntExpr struct {
 	value int64
 }

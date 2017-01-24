@@ -25,6 +25,10 @@ func (env Env) Execute() {
 			env.stack.Push(env.stack.Pop().div(env.stack.Pop()))
 		case OpLoadGVar:
 			env.stack.Push(env.vars.vars[code.Operand].value)
+		case OpLoadT:
+			env.stack.Push(VBool{true})
+		case OpLoadF:
+			env.stack.Push(VBool{false})
 		case OpLoad:
 			env.stack.Push(env.constant[code.Operand])
 		default:

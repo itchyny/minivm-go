@@ -16,7 +16,7 @@ func Parse(yylex yyLexer) int {
 %type<node> program statements statement expression
 %token<token> PRINT
 %token<token> EQ LPAREN RPAREN PLUS MINUS TIMES DIVIDE
-%token<token> INT FLOAT IDENT CR
+%token<token> INT FLOAT TRUE FALSE IDENT CR
 
 %left PLUS MINUS
 %left TIMES DIVIDE
@@ -75,6 +75,14 @@ expression
 	| IDENT
 	{
 		$$ = Ident{name: $1.literal}
+	}
+	| TRUE
+	{
+		$$ = BoolExpr{value: true}
+	}
+	| FALSE
+	{
+		$$ = BoolExpr{value: false}
 	}
 	| INT
 	{
