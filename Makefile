@@ -9,7 +9,7 @@ $(DIR)/parser.go: $(DIR)/parser.go.y
 
 build: all
 
-$(BUILD)/minivm: $(DIR)/lex.go $(DIR)/parser.go $(DIR)/opcode.go $(DIR)/value.go $(DIR)/stack.go $(DIR)/variable.go $(DIR)/codegen.go $(DIR)/vm.go $(CMD)/main.go
+$(BUILD)/minivm: $(DIR)/lex.go $(DIR)/parser.go $(DIR)/opcode.go $(DIR)/value.go $(DIR)/stack.go $(DIR)/variable.go $(DIR)/codegen.go $(DIR)/debug.go $(DIR)/vm.go $(CMD)/main.go
 	go build -o $@ $(CMD)/main.go
 
 test: testdeps build
