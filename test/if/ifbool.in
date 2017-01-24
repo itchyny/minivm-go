@@ -1,0 +1,7 @@
+if true
+  print 10
+end
+
+if false
+  print 20
+end
