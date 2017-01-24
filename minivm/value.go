@@ -2,6 +2,7 @@ package minivm
 
 type Value interface {
 	Value() interface{}
+	tobool() bool
 	add(Value) Value
 	sub(Value) Value
 	mul(Value) Value
@@ -13,6 +14,10 @@ type VBool struct {
 }
 
 func (v VBool) Value() interface{} {
+	return v.value
+}
+
+func (v VBool) tobool() bool {
 	return v.value
 }
 
@@ -38,6 +43,10 @@ type VInt struct {
 
 func (v VInt) Value() interface{} {
 	return v.value
+}
+
+func (v VInt) tobool() bool {
+	panic("you cannot use int for boolean")
 }
 
 func (rhs VInt) add(lhs Value) Value {
@@ -90,6 +99,10 @@ type VFloat struct {
 
 func (v VFloat) Value() interface{} {
 	return v.value
+}
+
+func (v VFloat) tobool() bool {
+	panic("you cannot use float for boolean")
 }
 
 func (rhs VFloat) add(lhs Value) Value {

@@ -20,9 +20,9 @@ func Codegen(node Node) *Env {
 	return env
 }
 
-func (env *Env) addCode(code Code) int64 {
+func (env *Env) addCode(code Code) int {
 	env.code = append(env.code, code)
-	return 1
+	return len(env.code) - 1
 }
 
 func (env *Env) addConst(value Value) int64 {
@@ -31,26 +31,36 @@ func (env *Env) addConst(value Value) int64 {
 	return int64(len)
 }
 
-func (env *Env) codegen(node Node) {
+func (env *Env) codegen(node Node) int64 {
+	var count int64
 	switch node := node.(type) {
 	case Statements:
 		for _, stmt := range node.stmts {
-			env.codegen(stmt)
+			count += env.codegen(stmt)
 		}
+	case IfStmt:
+		count += env.codegen(node.expr)
+		jmp := env.addCode(Code{OpCode: OpJmpNot})
+		count++
+		diff := env.codegen(node.stmts)
+		env.code[jmp].Operand = diff
+		count += diff
 	case LetStmt:
 		i := env.vars.lookup(node.ident)
 		if i < 0 {
 			fmt.Println("unknown variable: " + node.ident)
 			os.Exit(1)
 		}
-		env.codegen(node.expr)
+		count += env.codegen(node.expr)
 		env.addCode(Code{OpCode: OpLetGVar, Operand: i})
+		count++
 	case PrintStmt:
-		env.codegen(node.expr)
+		count += env.codegen(node.expr)
 		env.addCode(Code{OpCode: OpPrint})
+		count++
 	case BinOpExpr:
-		env.codegen(node.left)
-		env.codegen(node.right)
+		count += env.codegen(node.left)
+		count += env.codegen(node.right)
 		var op int8
 		switch node.op {
 		case PLUS:
@@ -66,6 +76,7 @@ func (env *Env) codegen(node Node) {
 			os.Exit(1)
 		}
 		env.addCode(Code{OpCode: op})
+		count++
 	case Ident:
 		i := env.vars.lookup(node.name)
 		if i < 0 {
@@ -73,18 +84,24 @@ func (env *Env) codegen(node Node) {
 			os.Exit(1)
 		}
 		env.addCode(Code{OpCode: OpLoadGVar, Operand: i})
+		count++
 	case BoolExpr:
 		if node.value {
 			env.addCode(Code{OpCode: OpLoadT})
+			count++
 		} else {
 			env.addCode(Code{OpCode: OpLoadF})
+			count++
 		}
 	case IntExpr:
 		env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{node.value})})
+		count++
 	case FloatExpr:
 		env.addCode(Code{OpLoad, env.addConst(VFloat{node.value})})
+		count++
 	default:
 		fmt.Printf("unknown node type: %+v\n", node)
 		os.Exit(1)
 	}
+	return count
 }

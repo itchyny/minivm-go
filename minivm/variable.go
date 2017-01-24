@@ -25,6 +25,11 @@ func (vars *Vars) alloc(node Node) {
 		for _, stmt := range node.stmts {
 			vars.alloc(stmt)
 		}
+	case IfStmt:
+		stmts, _ := node.stmts.(Statements)
+		for _, stmt := range stmts.stmts {
+			vars.alloc(stmt)
+		}
 	case LetStmt:
 		vars.set(node.ident)
 	}

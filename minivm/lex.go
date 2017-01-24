@@ -26,6 +26,10 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		token = FLOAT
 	} else if token == scanner.Ident {
 		switch lexer.scanner.TokenText() {
+		case "if":
+			token = IF
+		case "end":
+			token = END
 		case "print":
 			token = PRINT
 		case "true":

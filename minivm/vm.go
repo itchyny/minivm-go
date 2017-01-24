@@ -13,6 +13,10 @@ func (env Env) Execute() {
 		case OpPrint:
 			value := env.stack.Pop()
 			fmt.Printf("%v\n", value.Value())
+		case OpJmpNot:
+			if !env.stack.Pop().tobool() {
+				env.pc += int(code.Operand)
+			}
 		case OpLetGVar:
 			env.vars.vars[code.Operand].value = env.stack.Pop()
 		case OpAdd:
