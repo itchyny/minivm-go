@@ -78,7 +78,7 @@ func (env *Env) codegen(node Node) {
 	case FloatExpr:
 		env.addCode(Code{OpLoad, env.addConst(VFloat{node.value})})
 	default:
-		fmt.Println("unknown node type")
+		fmt.Printf("unknown node type: %+v\n", node)
 		os.Exit(1)
 	}
 }
