@@ -3,6 +3,7 @@ package minivm
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 func (env Env) Execute() {
@@ -12,6 +13,8 @@ func (env Env) Execute() {
 		case OpPrint:
 			value := env.stack.Pop()
 			fmt.Printf("%v\n", value.Value())
+		case OpLetGVar:
+			env.vars.vars[code.Operand].value = env.stack.Pop()
 		case OpAdd:
 			env.stack.Push(env.stack.Pop().add(env.stack.Pop()))
 		case OpSub:
@@ -20,10 +23,12 @@ func (env Env) Execute() {
 			env.stack.Push(env.stack.Pop().mul(env.stack.Pop()))
 		case OpDiv:
 			env.stack.Push(env.stack.Pop().div(env.stack.Pop()))
+		case OpLoadGVar:
+			env.stack.Push(env.vars.vars[code.Operand].value)
 		case OpLoad:
 			env.stack.Push(env.constant[code.Operand])
 		default:
-			fmt.Println("unknown opcode")
+			fmt.Println("unknown opcode: " + strconv.Itoa(int(code.OpCode)))
 			os.Exit(1)
 		}
 		env.pc++

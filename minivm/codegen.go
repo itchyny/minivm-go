@@ -10,10 +10,12 @@ type Env struct {
 	code     []Code
 	constant []Value
 	stack    Stack
+	vars     Vars
 }
 
 func Codegen(node Node) *Env {
 	env := new(Env)
+	env.vars.alloc(node)
 	env.codegen(node)
 	return env
 }
@@ -35,6 +37,14 @@ func (env *Env) codegen(node Node) {
 		for _, stmt := range node.stmts {
 			env.codegen(stmt)
 		}
+	case LetStmt:
+		i := env.vars.lookup(node.ident)
+		if i < 0 {
+			fmt.Println("unknown variable: " + node.ident)
+			os.Exit(1)
+		}
+		env.codegen(node.expr)
+		env.addCode(Code{OpCode: OpLetGVar, Operand: i})
 	case PrintStmt:
 		env.codegen(node.expr)
 		env.addCode(Code{OpCode: OpPrint})
@@ -56,6 +66,13 @@ func (env *Env) codegen(node Node) {
 			os.Exit(1)
 		}
 		env.addCode(Code{OpCode: op})
+	case Ident:
+		i := env.vars.lookup(node.name)
+		if i < 0 {
+			fmt.Println("unknown variable: " + node.name)
+			os.Exit(1)
+		}
+		env.addCode(Code{OpCode: OpLoadGVar, Operand: i})
 	case IntExpr:
 		env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{node.value})})
 	case FloatExpr:

@@ -28,7 +28,11 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		switch lexer.scanner.TokenText() {
 		case "print":
 			token = PRINT
+		default:
+			token = IDENT
 		}
+	} else if r == '=' {
+		token = EQ
 	} else if r == '+' {
 		token = PLUS
 	} else if r == '-' {
