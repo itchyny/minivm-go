@@ -28,6 +28,8 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		switch lexer.scanner.TokenText() {
 		case "if":
 			token = IF
+		case "elseif":
+			token = ELSEIF
 		case "else":
 			token = ELSE
 		case "end":
