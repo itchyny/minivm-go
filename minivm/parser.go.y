@@ -13,7 +13,7 @@ func Parse(yylex yyLexer) int {
 	token Token
 }
 
-%type<node> program statement expression
+%type<node> program statements statement expression
 %token<token> PRINT
 %token<token> PLUS MINUS TIMES DIVIDE
 %token<token> INT FLOAT CR
@@ -24,14 +24,25 @@ func Parse(yylex yyLexer) int {
 %%
 
 program
-	: sep_opt statement sep_opt
+	: sep_opt statements sep_opt
 	{
 		$$ = $2
 		yylex.(*Lexer).result = $$
 	}
 
+statements
+	: statement
+	{
+		$$ = Statements{stmts: []Node{$1}}
+	}
+	| statements sep statement
+	{
+		s, _ := $1.(Statements)
+		$$ = Statements{stmts: append(s.stmts, $3)}
+	}
+
 statement
-	: PRINT expression CR
+	: PRINT expression
 	{
 		$$ = PrintStmt{expr: $2}
 	}

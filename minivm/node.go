@@ -7,6 +7,10 @@ type Token struct {
 	token   int
 }
 
+type Statements struct {
+	stmts []Node
+}
+
 type PrintStmt struct {
 	expr Node
 }

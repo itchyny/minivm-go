@@ -31,6 +31,10 @@ func (env *Env) addConst(value Value) int64 {
 
 func (env *Env) codegen(node Node) {
 	switch node := node.(type) {
+	case Statements:
+		for _, stmt := range node.stmts {
+			env.codegen(stmt)
+		}
 	case PrintStmt:
 		env.codegen(node.expr)
 		env.addCode(Code{OpCode: OpPrint})
