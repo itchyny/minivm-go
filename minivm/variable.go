@@ -4,10 +4,10 @@ type Vars struct {
 	vars []Var
 }
 
-func (vars *Vars) lookup(name string) int64 {
+func (vars *Vars) lookup(name string) int {
 	for i, v := range vars.vars {
 		if v.name == name {
-			return int64(i)
+			return i
 		}
 	}
 	return -1

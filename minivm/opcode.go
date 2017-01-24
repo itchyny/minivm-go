@@ -16,5 +16,5 @@ const (
 
 type Code struct {
 	OpCode  int8
-	Operand int64
+	Operand int
 }

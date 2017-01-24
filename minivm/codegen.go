@@ -25,14 +25,14 @@ func (env *Env) addCode(code Code) int {
 	return len(env.code) - 1
 }
 
-func (env *Env) addConst(value Value) int64 {
+func (env *Env) addConst(value Value) int {
 	len := len(env.constant)
 	env.constant = append(env.constant, value)
-	return int64(len)
+	return len
 }
 
-func (env *Env) codegen(node Node) int64 {
-	var count int64
+func (env *Env) codegen(node Node) int {
+	var count int
 	switch node := node.(type) {
 	case Statements:
 		for _, stmt := range node.stmts {
