@@ -28,7 +28,12 @@ func (env Env) Execute() {
 		case OpDiv:
 			env.stack.Push(env.stack.Pop().div(env.stack.Pop()))
 		case OpLoadGVar:
-			env.stack.Push(env.vars.vars[code.Operand].value)
+			value := env.vars.vars[code.Operand].value
+			if value == nil {
+				fmt.Println("variable not initialized: " + env.vars.vars[code.Operand].name)
+				os.Exit(1)
+			}
+			env.stack.Push(value)
 		case OpLoadT:
 			env.stack.Push(VBool{true})
 		case OpLoadF:
