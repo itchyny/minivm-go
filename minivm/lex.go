@@ -33,6 +33,10 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		}
 	} else if r == '=' {
 		token = EQ
+	} else if r == '(' {
+		token = LPAREN
+	} else if r == ')' {
+		token = RPAREN
 	} else if r == '+' {
 		token = PLUS
 	} else if r == '-' {

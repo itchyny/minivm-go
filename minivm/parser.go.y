@@ -15,7 +15,7 @@ func Parse(yylex yyLexer) int {
 
 %type<node> program statements statement expression
 %token<token> PRINT
-%token<token> EQ PLUS MINUS TIMES DIVIDE
+%token<token> EQ LPAREN RPAREN PLUS MINUS TIMES DIVIDE
 %token<token> INT FLOAT IDENT CR
 
 %left PLUS MINUS
@@ -67,6 +67,10 @@ expression
 	| expression DIVIDE expression
 	{
 		$$ = BinOpExpr{op: DIVIDE, left: $1, right: $3}
+	}
+	| LPAREN expression RPAREN
+	{
+		$$ = $2
 	}
 	| IDENT
 	{
