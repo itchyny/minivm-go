@@ -16,7 +16,7 @@ func Parse(yylex yyLexer) int {
 %type<node> program statement expression
 %token<token> PRINT
 %token<token> PLUS MINUS TIMES DIVIDE
-%token<token> INT FLOAT
+%token<token> INT FLOAT CR
 
 %left PLUS MINUS
 %left TIMES DIVIDE
@@ -24,14 +24,14 @@ func Parse(yylex yyLexer) int {
 %%
 
 program
-	: statement
+	: sep_opt statement sep_opt
 	{
-		$$ = $1
+		$$ = $2
 		yylex.(*Lexer).result = $$
 	}
 
 statement
-	: PRINT expression
+	: PRINT expression CR
 	{
 		$$ = PrintStmt{expr: $2}
 	}
@@ -69,5 +69,13 @@ expression
 		}
 		$$ = FloatExpr{value: value}
 	}
+
+sep
+	: CR
+	| sep CR
+
+sep_opt
+	:
+	| sep
 
 %%

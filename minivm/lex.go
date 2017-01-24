@@ -14,6 +14,7 @@ type Lexer struct {
 
 func (lexer *Lexer) Init(reader io.Reader) {
 	lexer.scanner.Init(reader)
+	lexer.scanner.Whitespace = 1<<'\t' | 1<<' '
 }
 
 func (lexer *Lexer) Lex(lval *yySymType) int {
@@ -36,6 +37,13 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		token = TIMES
 	} else if r == '/' {
 		token = DIVIDE
+	} else if r == '\r' {
+		if lexer.scanner.Peek() == '\n' {
+			lexer.scanner.Scan()
+		}
+		token = CR
+	} else if r == '\n' {
+		token = CR
 	}
 	lval.token = Token{token: token, literal: lexer.scanner.TokenText()}
 	return token
