@@ -11,6 +11,8 @@ type Env struct {
 	constant []Value
 	stack    Stack
 	vars     Vars
+	breaks   []int
+	conts    []int
 }
 
 func Codegen(node Node) *Env {
@@ -57,16 +59,29 @@ func (env *Env) codegen(node Node) {
 		env.codegen(node.stmts)
 		env.addCode(Code{OpCode: OpJmp, Operand: -(len(env.code) - pc)})
 		env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
-		for i := jmpnot + 1; i < len(env.code); i++ {
-			if env.code[i].OpCode == OpBreak {
+		var breaks []int
+		for _, i := range env.breaks {
+			if jmpnot < i && i < len(env.code) {
 				env.code[i] = Code{OpCode: OpJmp, Operand: len(env.code) - i - 1}
-			} else if env.code[i].OpCode == OpCont {
-				env.code[i] = Code{OpCode: OpJmp, Operand: -(i - pc)}
+			} else {
+				breaks = append(breaks, i)
 			}
 		}
+		env.breaks = breaks
+		var conts []int
+		for _, i := range env.conts {
+			if jmpnot < i && i < len(env.code) {
+				env.code[i] = Code{OpCode: OpJmp, Operand: -(i - pc)}
+			} else {
+				conts = append(conts, i)
+			}
+		}
+		env.conts = conts
 	case BreakStmt:
+		env.breaks = append(env.breaks, len(env.code))
 		env.addCode(Code{OpCode: OpBreak})
 	case ContStmt:
+		env.conts = append(env.conts, len(env.code))
 		env.addCode(Code{OpCode: OpCont})
 	case LetStmt:
 		i := env.vars.lookup(node.ident)
