@@ -63,6 +63,10 @@ func (env Env) Debug() {
 			fmt.Printf("%d: load_false\n", i)
 		case OpLoad:
 			fmt.Printf("%d: load %d (%v)\n", i, c.Operand, env.constant[c.Operand].Value())
+		case OpBreak:
+			fmt.Printf("%d: break\n", i)
+		case OpCont:
+			fmt.Printf("%d: continue\n", i)
 		default:
 			fmt.Fprintln(os.Stderr, "unknown opcode: "+strconv.Itoa(int(c.OpCode)))
 			os.Exit(1)

@@ -64,6 +64,12 @@ func (env Env) Execute() {
 			env.stack.Push(VBool{false})
 		case OpLoad:
 			env.stack.Push(env.constant[code.Operand])
+		case OpBreak:
+			fmt.Fprintln(os.Stderr, "break outside while loop")
+			os.Exit(1)
+		case OpCont:
+			fmt.Fprintln(os.Stderr, "continue outside while loop")
+			os.Exit(1)
 		default:
 			fmt.Fprintln(os.Stderr, "unknown opcode: "+strconv.Itoa(int(code.OpCode)))
 			os.Exit(1)
