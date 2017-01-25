@@ -53,6 +53,8 @@ func (env Env) Debug() {
 			fmt.Printf("%d: lt <\n", i)
 		case OpLe:
 			fmt.Printf("%d: le <=\n", i)
+		case OpNot:
+			fmt.Printf("%d: not !\n", i)
 		case OpLoadGVar:
 			fmt.Printf("%d: load_gvar %d (%s)\n", i, c.Operand, env.vars.vars[c.Operand].name)
 		case OpLoadT:

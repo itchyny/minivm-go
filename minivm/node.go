@@ -26,6 +26,11 @@ type PrintStmt struct {
 	expr Node
 }
 
+type UnaryOpExpr struct {
+	op   int
+	expr Node
+}
+
 type BinOpExpr struct {
 	op    int
 	left  Node

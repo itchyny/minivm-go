@@ -17,7 +17,7 @@ func Parse(yylex yyLexer) int {
 %token<token> IF ELSEIF ELSE END PRINT
 %token<token> EQ LPAREN RPAREN
 %token<token> PLUS MINUS TIMES DIVIDE
-%token<token> GT GE EQEQ NEQ LT LE
+%token<token> GT GE EQEQ NEQ LT LE NOT
 %token<token> INT FLOAT TRUE FALSE IDENT CR
 
 %left OR
@@ -26,6 +26,7 @@ func Parse(yylex yyLexer) int {
 %left GT GE LT LE
 %left PLUS MINUS
 %left TIMES DIVIDE
+%right NOT
 
 %%
 
@@ -123,6 +124,10 @@ expression
 	| expression AND expression
 	{
 		$$ = BinOpExpr{op: AND, left: $1, right: $3}
+	}
+	| NOT expression
+	{
+		$$ = UnaryOpExpr{op: NOT, expr: $2}
 	}
 	| LPAREN expression RPAREN
 	{

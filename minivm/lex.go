@@ -54,6 +54,8 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		if lexer.scanner.Peek() == '=' {
 			lexer.scanner.Scan()
 			token = NEQ
+		} else {
+			token = NOT
 		}
 	} else if r == '(' {
 		token = LPAREN

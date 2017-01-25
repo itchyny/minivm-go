@@ -49,6 +49,8 @@ func (env Env) Execute() {
 			env.stack.Push(env.stack.Pop().lt(env.stack.Pop()))
 		case OpLe:
 			env.stack.Push(env.stack.Pop().le(env.stack.Pop()))
+		case OpNot:
+			env.stack.Push(env.stack.Pop().not())
 		case OpLoadGVar:
 			value := env.vars.vars[code.Operand].value
 			if value == nil {

@@ -105,6 +105,17 @@ func (env *Env) codegen(node Node) {
 			}
 			env.addCode(Code{OpCode: op})
 		}
+	case UnaryOpExpr:
+		env.codegen(node.expr)
+		var op int8
+		switch node.op {
+		case NOT:
+			op = OpNot
+		default:
+			fmt.Fprintln(os.Stderr, "unknown unary operator")
+			os.Exit(1)
+		}
+		env.addCode(Code{OpCode: op})
 	case Ident:
 		i := env.vars.lookup(node.name)
 		if i < 0 {

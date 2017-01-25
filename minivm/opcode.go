@@ -22,6 +22,7 @@ const (
 	OpNeq
 	OpLt
 	OpLe
+	OpNot
 )
 
 type Code struct {

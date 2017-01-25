@@ -3,6 +3,7 @@ package minivm
 type Value interface {
 	Value() interface{}
 	tobool() bool
+	not() Value
 	add(Value) Value
 	sub(Value) Value
 	mul(Value) Value
@@ -25,6 +26,10 @@ func (v VBool) Value() interface{} {
 
 func (v VBool) tobool() bool {
 	return v.value
+}
+
+func (v VBool) not() Value {
+	return VBool{value: !v.value}
 }
 
 func (rhs VBool) add(lhs Value) Value {
@@ -87,6 +92,10 @@ func (v VInt) Value() interface{} {
 
 func (v VInt) tobool() bool {
 	panic("you cannot use int for boolean")
+}
+
+func (v VInt) not() Value {
+	panic("you cannot use ! on int")
 }
 
 func (rhs VInt) add(lhs Value) Value {
@@ -205,6 +214,10 @@ func (v VFloat) Value() interface{} {
 
 func (v VFloat) tobool() bool {
 	panic("you cannot use float for boolean")
+}
+
+func (v VFloat) not() Value {
+	panic("you cannot use ! on float")
 }
 
 func (rhs VFloat) add(lhs Value) Value {
