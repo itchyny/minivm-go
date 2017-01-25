@@ -28,7 +28,7 @@ func TestMain(t *testing.T) {
 			} else if string(output) == string(expected) && stderr.String() == string(errexpected) {
 				t.Logf("PASS: " + path + "\n")
 			} else {
-				t.Errorf("FAIL: output differs: " + path + "\nOutput:" + string(output) + "\nExpected:" + string(expected))
+				t.Errorf("FAIL: output differs: " + path + "\nOutput:\n" + string(output) + stderr.String() + "\nExpected:\n" + string(expected) + string(errexpected))
 			}
 		}
 		return nil
