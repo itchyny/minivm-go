@@ -29,6 +29,18 @@ func (env Env) Execute() {
 			env.stack.Push(env.stack.Pop().mul(env.stack.Pop()))
 		case OpDiv:
 			env.stack.Push(env.stack.Pop().div(env.stack.Pop()))
+		case OpGt:
+			env.stack.Push(env.stack.Pop().gt(env.stack.Pop()))
+		case OpGe:
+			env.stack.Push(env.stack.Pop().ge(env.stack.Pop()))
+		case OpEq:
+			env.stack.Push(env.stack.Pop().eq(env.stack.Pop()))
+		case OpNeq:
+			env.stack.Push(env.stack.Pop().neq(env.stack.Pop()))
+		case OpLt:
+			env.stack.Push(env.stack.Pop().lt(env.stack.Pop()))
+		case OpLe:
+			env.stack.Push(env.stack.Pop().le(env.stack.Pop()))
 		case OpLoadGVar:
 			value := env.vars.vars[code.Operand].value
 			if value == nil {

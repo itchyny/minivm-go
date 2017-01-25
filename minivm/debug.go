@@ -35,6 +35,18 @@ func (env Env) Debug() {
 			fmt.Printf("%d: mul\n", i)
 		case OpDiv:
 			fmt.Printf("%d: div\n", i)
+		case OpGt:
+			fmt.Printf("%d: gt >\n", i)
+		case OpGe:
+			fmt.Printf("%d: ge >=\n", i)
+		case OpEq:
+			fmt.Printf("%d: eq ==\n", i)
+		case OpNeq:
+			fmt.Printf("%d: neq !=\n", i)
+		case OpLt:
+			fmt.Printf("%d: lt <\n", i)
+		case OpLe:
+			fmt.Printf("%d: le <=\n", i)
 		case OpLoadGVar:
 			fmt.Printf("%d: load_gvar %d (%s)\n", i, c.Operand, env.vars.vars[c.Operand].name)
 		case OpLoadT:

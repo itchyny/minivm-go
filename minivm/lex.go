@@ -44,7 +44,17 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 			token = IDENT
 		}
 	} else if r == '=' {
-		token = EQ
+		if lexer.scanner.Peek() == '=' {
+			lexer.scanner.Scan()
+			token = EQEQ
+		} else {
+			token = EQ
+		}
+	} else if r == '!' {
+		if lexer.scanner.Peek() == '=' {
+			lexer.scanner.Scan()
+			token = NEQ
+		}
 	} else if r == '(' {
 		token = LPAREN
 	} else if r == ')' {
@@ -57,6 +67,20 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		token = TIMES
 	} else if r == '/' {
 		token = DIVIDE
+	} else if r == '>' {
+		if lexer.scanner.Peek() == '=' {
+			lexer.scanner.Scan()
+			token = GE
+		} else {
+			token = GT
+		}
+	} else if r == '<' {
+		if lexer.scanner.Peek() == '=' {
+			lexer.scanner.Scan()
+			token = LE
+		} else {
+			token = LT
+		}
 	} else if r == '\r' {
 		if lexer.scanner.Peek() == '\n' {
 			lexer.scanner.Scan()

@@ -15,9 +15,13 @@ func Parse(yylex yyLexer) int {
 
 %type<node> program statements statement else_opt expression
 %token<token> IF ELSEIF ELSE END PRINT
-%token<token> EQ LPAREN RPAREN PLUS MINUS TIMES DIVIDE
+%token<token> EQ LPAREN RPAREN
+%token<token> PLUS MINUS TIMES DIVIDE
+%token<token> GT GE EQEQ NEQ LT LE
 %token<token> INT FLOAT TRUE FALSE IDENT CR
 
+%nonassoc EQEQ NEQ
+%left GT GE LT LE
 %left PLUS MINUS
 %left TIMES DIVIDE
 
@@ -85,6 +89,30 @@ expression
 	| expression DIVIDE expression
 	{
 		$$ = BinOpExpr{op: DIVIDE, left: $1, right: $3}
+	}
+	| expression GT expression
+	{
+		$$ = BinOpExpr{op: GT, left: $1, right: $3}
+	}
+	| expression GE expression
+	{
+		$$ = BinOpExpr{op: GE, left: $1, right: $3}
+	}
+	| expression EQEQ expression
+	{
+		$$ = BinOpExpr{op: EQEQ, left: $1, right: $3}
+	}
+	| expression NEQ expression
+	{
+		$$ = BinOpExpr{op: NEQ, left: $1, right: $3}
+	}
+	| expression LT expression
+	{
+		$$ = BinOpExpr{op: LT, left: $1, right: $3}
+	}
+	| expression LE expression
+	{
+		$$ = BinOpExpr{op: LE, left: $1, right: $3}
 	}
 	| LPAREN expression RPAREN
 	{

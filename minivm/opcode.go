@@ -13,6 +13,12 @@ const (
 	OpSub
 	OpMul
 	OpDiv
+	OpGt
+	OpGe
+	OpEq
+	OpNeq
+	OpLt
+	OpLe
 )
 
 type Code struct {

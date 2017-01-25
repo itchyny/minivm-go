@@ -7,6 +7,12 @@ type Value interface {
 	sub(Value) Value
 	mul(Value) Value
 	div(Value) Value
+	gt(Value) Value
+	ge(Value) Value
+	eq(Value) Value
+	neq(Value) Value
+	lt(Value) Value
+	le(Value) Value
 }
 
 type VBool struct {
@@ -35,6 +41,40 @@ func (rhs VBool) mul(lhs Value) Value {
 
 func (rhs VBool) div(lhs Value) Value {
 	panic("you cannot divide by boolean")
+}
+
+func (rhs VBool) gt(lhs Value) Value {
+	panic("you cannot use > on boolean")
+}
+
+func (rhs VBool) ge(lhs Value) Value {
+	panic("you cannot use >= on boolean")
+}
+
+func (rhs VBool) eq(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VBool:
+		return VBool{value: lhs.value == rhs.value}
+	default:
+		panic("invalid value type for ==")
+	}
+}
+
+func (rhs VBool) neq(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VBool:
+		return VBool{value: lhs.value != rhs.value}
+	default:
+		panic("invalid value type for !=")
+	}
+}
+
+func (rhs VBool) lt(lhs Value) Value {
+	panic("you cannot use < on boolean")
+}
+
+func (rhs VBool) le(lhs Value) Value {
+	panic("you cannot use <= on boolean")
 }
 
 type VInt struct {
@@ -93,6 +133,68 @@ func (rhs VInt) div(lhs Value) Value {
 	}
 }
 
+func (rhs VInt) gt(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: lhs.value > rhs.value}
+	case VFloat:
+		return VBool{value: lhs.value > float64(rhs.value)}
+	default:
+		panic("invalid value type for >")
+	}
+}
+
+func (rhs VInt) ge(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: lhs.value >= rhs.value}
+	case VFloat:
+		return VBool{value: lhs.value >= float64(rhs.value)}
+	default:
+		panic("invalid value type for >=")
+	}
+}
+
+func (rhs VInt) eq(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: lhs.value == rhs.value}
+	default:
+		panic("invalid value type for ==")
+	}
+}
+
+func (rhs VInt) neq(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: lhs.value != rhs.value}
+	default:
+		panic("invalid value type for !=")
+	}
+}
+
+func (rhs VInt) lt(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: lhs.value < rhs.value}
+	case VFloat:
+		return VBool{value: lhs.value < float64(rhs.value)}
+	default:
+		panic("invalid value type for <")
+	}
+}
+
+func (rhs VInt) le(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: lhs.value <= rhs.value}
+	case VFloat:
+		return VBool{value: lhs.value <= float64(rhs.value)}
+	default:
+		panic("invalid value type for <=")
+	}
+}
+
 type VFloat struct {
 	value float64
 }
@@ -146,5 +248,67 @@ func (rhs VFloat) div(lhs Value) Value {
 		return VFloat{value: lhs.value / rhs.value}
 	default:
 		panic("invalid value type for div")
+	}
+}
+
+func (rhs VFloat) gt(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: float64(lhs.value) > rhs.value}
+	case VFloat:
+		return VBool{value: lhs.value > rhs.value}
+	default:
+		panic("invalid value type for >")
+	}
+}
+
+func (rhs VFloat) ge(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: float64(lhs.value) >= rhs.value}
+	case VFloat:
+		return VBool{value: lhs.value >= rhs.value}
+	default:
+		panic("invalid value type for >=")
+	}
+}
+
+func (rhs VFloat) eq(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VFloat:
+		return VBool{value: lhs.value == rhs.value}
+	default:
+		panic("invalid value type for ==")
+	}
+}
+
+func (rhs VFloat) neq(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VFloat:
+		return VBool{value: lhs.value != rhs.value}
+	default:
+		panic("invalid value type for !=")
+	}
+}
+
+func (rhs VFloat) lt(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: float64(lhs.value) < rhs.value}
+	case VFloat:
+		return VBool{value: lhs.value < rhs.value}
+	default:
+		panic("invalid value type for <")
+	}
+}
+
+func (rhs VFloat) le(lhs Value) Value {
+	switch lhs := lhs.(type) {
+	case VInt:
+		return VBool{value: float64(lhs.value) <= rhs.value}
+	case VFloat:
+		return VBool{value: lhs.value <= rhs.value}
+	default:
+		panic("invalid value type for <=")
 	}
 }
