@@ -57,6 +57,17 @@ func (env *Env) codegen(node Node) {
 		env.codegen(node.stmts)
 		env.addCode(Code{OpCode: OpJmp, Operand: -(len(env.code) - pc)})
 		env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
+		for i := jmpnot + 1; i < len(env.code); i++ {
+			if env.code[i].OpCode == OpBreak {
+				env.code[i] = Code{OpCode: OpJmp, Operand: len(env.code) - i - 1}
+			} else if env.code[i].OpCode == OpCont {
+				env.code[i] = Code{OpCode: OpJmp, Operand: -(i - pc)}
+			}
+		}
+	case BreakStmt:
+		env.addCode(Code{OpCode: OpBreak})
+	case ContStmt:
+		env.addCode(Code{OpCode: OpCont})
 	case LetStmt:
 		i := env.vars.lookup(node.ident)
 		if i < 0 {

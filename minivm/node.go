@@ -22,6 +22,12 @@ type WhileStmt struct {
 	stmts Node
 }
 
+type BreakStmt struct {
+}
+
+type ContStmt struct {
+}
+
 type LetStmt struct {
 	ident string
 	expr  Node

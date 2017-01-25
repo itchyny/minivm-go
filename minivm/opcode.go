@@ -23,6 +23,10 @@ const (
 	OpLt
 	OpLe
 	OpNot
+
+	// temporary opcodes
+	OpBreak
+	OpCont
 )
 
 type Code struct {

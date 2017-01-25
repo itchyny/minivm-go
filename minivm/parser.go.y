@@ -14,7 +14,7 @@ func Parse(yylex yyLexer) int {
 }
 
 %type<node> program statements statement else_opt expression
-%token<token> IF ELSEIF ELSE WHILE END PRINT
+%token<token> IF ELSEIF ELSE WHILE BREAK CONTINUE END PRINT
 %token<token> EQ LPAREN RPAREN
 %token<token> PLUS MINUS TIMES DIVIDE
 %token<token> GT GE EQEQ NEQ LT LE NOT
@@ -56,6 +56,14 @@ statement
 	| WHILE expression sep statements sep END
 	{
 		$$ = WhileStmt{expr: $2, stmts: $4}
+	}
+	| BREAK
+	{
+		$$ = BreakStmt{}
+	}
+	| CONTINUE
+	{
+		$$ = ContStmt{}
 	}
 	| IDENT EQ expression
 	{
