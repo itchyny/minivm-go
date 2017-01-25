@@ -10,8 +10,11 @@ end
 print 100
 
 b = 1
-while b < 10
+while b < 100
   c = 1
+  if b >= 10
+    break
+  end
   while c < 10
     print b * c
     if c > 4
@@ -19,9 +22,6 @@ while b < 10
     end
     print c
     c = c + 1
-  end
-  if b > 4
-    break
   end
   print b
   b = b + 1
