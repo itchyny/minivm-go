@@ -20,11 +20,12 @@ func (lexer *Lexer) Init(reader io.Reader) {
 func (lexer *Lexer) Lex(lval *yySymType) int {
 	r := lexer.scanner.Scan()
 	token := int(r)
-	if token == scanner.Int {
+	switch token {
+	case scanner.Int:
 		token = INT
-	} else if token == scanner.Float {
+	case scanner.Float:
 		token = FLOAT
-	} else if token == scanner.Ident {
+	case scanner.Ident:
 		switch lexer.scanner.TokenText() {
 		case "if":
 			token = IF
@@ -49,63 +50,66 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		default:
 			token = IDENT
 		}
-	} else if r == '=' {
-		if lexer.scanner.Peek() == '=' {
-			lexer.scanner.Scan()
-			token = EQEQ
-		} else {
-			token = EQ
+	default:
+		switch r {
+		case '=':
+			if lexer.scanner.Peek() == '=' {
+				lexer.scanner.Scan()
+				token = EQEQ
+			} else {
+				token = EQ
+			}
+		case '!':
+			if lexer.scanner.Peek() == '=' {
+				lexer.scanner.Scan()
+				token = NEQ
+			} else {
+				token = NOT
+			}
+		case '(':
+			token = LPAREN
+		case ')':
+			token = RPAREN
+		case '+':
+			token = PLUS
+		case '-':
+			token = MINUS
+		case '*':
+			token = TIMES
+		case '/':
+			token = DIVIDE
+		case '>':
+			if lexer.scanner.Peek() == '=' {
+				lexer.scanner.Scan()
+				token = GE
+			} else {
+				token = GT
+			}
+		case '<':
+			if lexer.scanner.Peek() == '=' {
+				lexer.scanner.Scan()
+				token = LE
+			} else {
+				token = LT
+			}
+		case '&':
+			if lexer.scanner.Peek() == '&' {
+				lexer.scanner.Scan()
+				token = AND
+			}
+		case '|':
+			if lexer.scanner.Peek() == '|' {
+				lexer.scanner.Scan()
+				token = OR
+			}
+		case '\r':
+			if lexer.scanner.Peek() == '\n' {
+				lexer.scanner.Scan()
+			}
+			token = CR
+		case '\n':
+			token = CR
 		}
-	} else if r == '!' {
-		if lexer.scanner.Peek() == '=' {
-			lexer.scanner.Scan()
-			token = NEQ
-		} else {
-			token = NOT
-		}
-	} else if r == '(' {
-		token = LPAREN
-	} else if r == ')' {
-		token = RPAREN
-	} else if r == '+' {
-		token = PLUS
-	} else if r == '-' {
-		token = MINUS
-	} else if r == '*' {
-		token = TIMES
-	} else if r == '/' {
-		token = DIVIDE
-	} else if r == '>' {
-		if lexer.scanner.Peek() == '=' {
-			lexer.scanner.Scan()
-			token = GE
-		} else {
-			token = GT
-		}
-	} else if r == '<' {
-		if lexer.scanner.Peek() == '=' {
-			lexer.scanner.Scan()
-			token = LE
-		} else {
-			token = LT
-		}
-	} else if r == '&' {
-		if lexer.scanner.Peek() == '&' {
-			lexer.scanner.Scan()
-			token = AND
-		}
-	} else if r == '|' {
-		if lexer.scanner.Peek() == '|' {
-			lexer.scanner.Scan()
-			token = OR
-		}
-	} else if r == '\r' {
-		if lexer.scanner.Peek() == '\n' {
-			lexer.scanner.Scan()
-		}
-		token = CR
-	} else if r == '\n' {
-		token = CR
 	}
 	lval.token = Token{token: token, literal: lexer.scanner.TokenText()}
 	return token
