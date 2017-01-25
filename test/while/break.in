@@ -1,0 +1,28 @@
+a = 1
+while true
+  print a
+  if a >= 10
+    break
+  end
+  a = a + 1
+end
+
+print 100
+
+b = 1
+while b < 10
+  c = 1
+  while c < 10
+    print b * c
+    if c > 4
+      break
+    end
+    print c
+    c = c + 1
+  end
+  if b > 4
+    break
+  end
+  print b
+  b = b + 1
+end
