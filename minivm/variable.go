@@ -28,6 +28,8 @@ func (vars *Vars) alloc(node Node) {
 	case IfStmt:
 		vars.alloc(node.stmts)
 		vars.alloc(node.elsestmts)
+	case WhileStmt:
+		vars.alloc(node.stmts)
 	case LetStmt:
 		vars.set(node.ident)
 	}

@@ -14,7 +14,7 @@ func Parse(yylex yyLexer) int {
 }
 
 %type<node> program statements statement else_opt expression
-%token<token> IF ELSEIF ELSE END PRINT
+%token<token> IF ELSEIF ELSE WHILE END PRINT
 %token<token> EQ LPAREN RPAREN
 %token<token> PLUS MINUS TIMES DIVIDE
 %token<token> GT GE EQEQ NEQ LT LE NOT
@@ -52,6 +52,10 @@ statement
 	: IF expression sep statements sep else_opt END
 	{
 		$$ = IfStmt{expr: $2, stmts: $4, elsestmts: $6}
+	}
+	| WHILE expression sep statements sep END
+	{
+		$$ = WhileStmt{expr: $2, stmts: $4}
 	}
 	| IDENT EQ expression
 	{

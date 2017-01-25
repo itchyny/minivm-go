@@ -17,6 +17,11 @@ type IfStmt struct {
 	elsestmts Node
 }
 
+type WhileStmt struct {
+	expr  Node
+	stmts Node
+}
+
 type LetStmt struct {
 	ident string
 	expr  Node

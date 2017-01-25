@@ -32,6 +32,8 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 			token = ELSEIF
 		case "else":
 			token = ELSE
+		case "while":
+			token = WHILE
 		case "end":
 			token = END
 		case "print":

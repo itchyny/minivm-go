@@ -50,6 +50,13 @@ func (env *Env) codegen(node Node) {
 		} else {
 			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
 		}
+	case WhileStmt:
+		pc := len(env.code) - 1
+		env.codegen(node.expr)
+		jmpnot := env.addCode(Code{OpCode: OpJmpNot})
+		env.codegen(node.stmts)
+		env.addCode(Code{OpCode: OpJmp, Operand: -(len(env.code) - pc)})
+		env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
 	case LetStmt:
 		i := env.vars.lookup(node.ident)
 		if i < 0 {
