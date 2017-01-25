@@ -63,34 +63,48 @@ func (env *Env) codegen(node Node) {
 		env.addCode(Code{OpCode: OpPrint})
 	case BinOpExpr:
 		env.codegen(node.left)
-		env.codegen(node.right)
-		var op int8
-		switch node.op {
-		case PLUS:
-			op = OpAdd
-		case MINUS:
-			op = OpSub
-		case TIMES:
-			op = OpMul
-		case DIVIDE:
-			op = OpDiv
-		case GT:
-			op = OpGt
-		case GE:
-			op = OpGe
-		case EQEQ:
-			op = OpEq
-		case NEQ:
-			op = OpNeq
-		case LT:
-			op = OpLt
-		case LE:
-			op = OpLe
-		default:
-			fmt.Fprintln(os.Stderr, "unknown binary operator")
-			os.Exit(1)
+		if node.op == AND {
+			env.addCode(Code{OpCode: OpDup})
+			jmpnot := env.addCode(Code{OpCode: OpJmpNot})
+			env.addCode(Code{OpCode: OpPop})
+			env.codegen(node.right)
+			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
+		} else if node.op == OR {
+			env.addCode(Code{OpCode: OpDup})
+			jmpif := env.addCode(Code{OpCode: OpJmpIf})
+			env.addCode(Code{OpCode: OpPop})
+			env.codegen(node.right)
+			env.code[jmpif].Operand = len(env.code) - jmpif - 1
+		} else {
+			env.codegen(node.right)
+			var op int8
+			switch node.op {
+			case PLUS:
+				op = OpAdd
+			case MINUS:
+				op = OpSub
+			case TIMES:
+				op = OpMul
+			case DIVIDE:
+				op = OpDiv
+			case GT:
+				op = OpGt
+			case GE:
+				op = OpGe
+			case EQEQ:
+				op = OpEq
+			case NEQ:
+				op = OpNeq
+			case LT:
+				op = OpLt
+			case LE:
+				op = OpLe
+			default:
+				fmt.Fprintln(os.Stderr, "unknown binary operator")
+				os.Exit(1)
+			}
+			env.addCode(Code{OpCode: op})
 		}
-		env.addCode(Code{OpCode: op})
 	case Ident:
 		i := env.vars.lookup(node.name)
 		if i < 0 {

@@ -20,6 +20,8 @@ func Parse(yylex yyLexer) int {
 %token<token> GT GE EQEQ NEQ LT LE
 %token<token> INT FLOAT TRUE FALSE IDENT CR
 
+%left OR
+%left AND
 %nonassoc EQEQ NEQ
 %left GT GE LT LE
 %left PLUS MINUS
@@ -113,6 +115,14 @@ expression
 	| expression LE expression
 	{
 		$$ = BinOpExpr{op: LE, left: $1, right: $3}
+	}
+	| expression OR expression
+	{
+		$$ = BinOpExpr{op: OR, left: $1, right: $3}
+	}
+	| expression AND expression
+	{
+		$$ = BinOpExpr{op: AND, left: $1, right: $3}
 	}
 	| LPAREN expression RPAREN
 	{

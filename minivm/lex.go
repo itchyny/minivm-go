@@ -81,6 +81,16 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		} else {
 			token = LT
 		}
+	} else if r == '&' {
+		if lexer.scanner.Peek() == '&' {
+			lexer.scanner.Scan()
+			token = AND
+		}
+	} else if r == '|' {
+		if lexer.scanner.Peek() == '|' {
+			lexer.scanner.Scan()
+			token = OR
+		}
 	} else if r == '\r' {
 		if lexer.scanner.Peek() == '\n' {
 			lexer.scanner.Scan()

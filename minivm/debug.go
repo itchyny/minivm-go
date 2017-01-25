@@ -21,8 +21,14 @@ func (env Env) Debug() {
 		switch c.OpCode {
 		case OpPrint:
 			fmt.Printf("%d: print\n", i)
+		case OpPop:
+			fmt.Printf("%d: pop\n", i)
+		case OpDup:
+			fmt.Printf("%d: dup\n", i)
 		case OpJmp:
 			fmt.Printf("%d: jmp %d\n", i, c.Operand)
+		case OpJmpIf:
+			fmt.Printf("%d: jmp_if %d\n", i, c.Operand)
 		case OpJmpNot:
 			fmt.Printf("%d: jmp_not %d\n", i, c.Operand)
 		case OpLetGVar:
