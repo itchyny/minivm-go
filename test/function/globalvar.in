@@ -1,0 +1,11 @@
+a = 10
+b = 20
+func foo(x)
+  b = 30
+  return a * b + x + c
+end
+
+c = 50
+print foo(50)
+print a
+print b
