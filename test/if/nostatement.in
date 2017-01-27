@@ -1,0 +1,15 @@
+if true
+  a = 10
+else
+  b = 10
+  print b
+end
+
+if false
+else
+  if true
+    print a
+  else
+  end
+end
+
