@@ -27,6 +27,10 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 		token = FLOAT
 	case scanner.Ident:
 		switch lexer.scanner.TokenText() {
+		case "func":
+			token = FUNC
+		case "return":
+			token = RETURN
 		case "if":
 			token = IF
 		case "elseif":
@@ -70,6 +74,8 @@ func (lexer *Lexer) Lex(lval *yySymType) int {
 			token = LPAREN
 		case ')':
 			token = RPAREN
+		case ',':
+			token = COMMA
 		case '+':
 			token = PLUS
 		case '-':

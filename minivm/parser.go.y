@@ -11,13 +11,17 @@ func Parse(yylex yyLexer) int {
 %union{
 	node  Node
 	statements Statements
+	literals []string
+	nodes []Node
 	token Token
 }
 
 %type<node> program statement else_opt expression
 %type<statements> statements
-%token<token> IF ELSEIF ELSE WHILE BREAK CONTINUE END PRINT
-%token<token> EQ LPAREN RPAREN
+%type<literals> fargs farg_list
+%type<nodes> args arg_list
+%token<token> FUNC RETURN IF ELSEIF ELSE WHILE BREAK CONTINUE END PRINT
+%token<token> EQ LPAREN RPAREN COMMA
 %token<token> PLUS MINUS TIMES DIVIDE
 %token<token> GT GE EQEQ NEQ LT LE NOT
 %token<token> INT FLOAT TRUE FALSE IDENT CR
@@ -50,7 +54,15 @@ statements
 	}
 
 statement
-	: IF expression sep statements else_opt END
+	: FUNC IDENT LPAREN fargs RPAREN sep statements END
+	{
+		$$ = Function{name: $2.literal, args: $4, stmts: $7}
+	}
+	| RETURN expression
+	{
+		$$ = ReturnStmt{expr: $2}
+	}
+	| IF expression sep statements else_opt END
 	{
 		$$ = IfStmt{expr: $2, stmts: $4, elsestmts: $5}
 	}
@@ -73,6 +85,46 @@ statement
 	| PRINT expression
 	{
 		$$ = PrintStmt{expr: $2}
+	}
+
+fargs
+	:
+	{
+		$$ = []string{}
+	}
+	|	farg_list
+	{
+		$$ = $1
+	}
+
+farg_list
+	: IDENT
+	{
+		$$ = []string{$1.literal}
+	}
+	|	farg_list COMMA IDENT
+	{
+		$$ = append($1, $3.literal)
+	}
+
+args
+	:
+	{
+		$$ = []Node{}
+	}
+	|	arg_list
+	{
+		$$ = $1
+	}
+
+arg_list
+	: expression
+	{
+		$$ = []Node{$1}
+	}
+	|	arg_list COMMA expression
+	{
+		$$ = append($1, $3)
 	}
 
 else_opt
@@ -145,6 +197,10 @@ expression
 	| LPAREN expression RPAREN
 	{
 		$$ = $2
+	}
+	| IDENT LPAREN args RPAREN
+	{
+		$$ = CallExpr{name: $1.literal, exprs: $3}
 	}
 	| IDENT
 	{

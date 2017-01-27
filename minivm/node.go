@@ -7,6 +7,16 @@ type Token struct {
 	token   int
 }
 
+type Function struct {
+	name  string
+	args  []string
+	stmts Node
+}
+
+type ReturnStmt struct {
+	expr Node
+}
+
 type Statements struct {
 	stmts []Node
 }
@@ -35,6 +45,11 @@ type LetStmt struct {
 
 type PrintStmt struct {
 	expr Node
+}
+
+type CallExpr struct {
+	name  string
+	exprs []Node
 }
 
 type UnaryOpExpr struct {
