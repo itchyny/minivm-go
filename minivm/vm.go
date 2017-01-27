@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func (env Env) Execute() {
+func (env *Env) Execute() {
 	for env.pc < len(env.code) {
 		code := env.code[env.pc]
 		switch code.OpCode {

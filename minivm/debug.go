@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func (env Env) Debug() {
+func (env *Env) Debug() {
 	for i, v := range env.constant {
 		fmt.Printf("%d: %v\n", i, v.Value())
 	}
