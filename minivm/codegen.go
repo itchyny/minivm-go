@@ -16,10 +16,9 @@ func (env *Env) codegen(node Node) {
 		jmpnot := env.addCode(Code{OpCode: OpJmpNot})
 		env.codegen(node.stmts)
 		if node.elsestmts != nil {
-			stmts, _ := node.elsestmts.(Statements)
 			jmp := env.addCode(Code{OpCode: OpJmp})
 			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
-			env.codegen(stmts)
+			env.codegen(node.elsestmts)
 			env.code[jmp].Operand = len(env.code) - jmp - 1
 		} else {
 			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1

@@ -10,10 +10,12 @@ func Parse(yylex yyLexer) int {
 
 %union{
 	node  Node
+	statements Statements
 	token Token
 }
 
-%type<node> program statements statement else_opt expression
+%type<node> program statement else_opt expression
+%type<statements> statements
 %token<token> IF ELSEIF ELSE WHILE BREAK CONTINUE END PRINT
 %token<token> EQ LPAREN RPAREN
 %token<token> PLUS MINUS TIMES DIVIDE
@@ -44,8 +46,7 @@ statements
 	}
 	| statements statement sep
 	{
-		s, _ := $1.(Statements)
-		$$ = Statements{stmts: append(s.stmts, $2)}
+		$$ = Statements{stmts: append($1.stmts, $2)}
 	}
 
 statement
