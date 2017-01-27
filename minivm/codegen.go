@@ -39,6 +39,10 @@ func (env *Env) codegen(node Node) {
 		env.localvars = nil
 		env.code[jmp].Operand = len(env.code) - jmp - 1
 	case ReturnStmt:
+		if env.localvars == nil {
+			fmt.Fprintln(os.Stderr, "return outside function")
+			os.Exit(1)
+		}
 		env.codegen(node.expr)
 		env.returns = append(env.returns, len(env.code))
 		env.addCode(Code{OpCode: OpRet})
