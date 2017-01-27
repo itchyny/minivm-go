@@ -4,14 +4,16 @@ type Env struct {
 	pc       int
 	code     []Code
 	constant []Value
-	stack    Stack
-	vars     Vars
+	stack    *Stack
+	vars     *Vars
 	breaks   []int
 	conts    []int
 }
 
 func Codegen(node Node) *Env {
 	env := new(Env)
+	env.stack = new(Stack)
+	env.vars = new(Vars)
 	env.vars.alloc(node)
 	env.codegen(node)
 	return env
