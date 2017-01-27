@@ -31,29 +31,29 @@ func Parse(yylex yyLexer) int {
 %%
 
 program
-	: sep_opt statements sep_opt
+	: statements
 	{
-		$$ = $2
+		$$ = $1
 		yylex.(*Lexer).result = $$
 	}
 
 statements
-	: statement
+	:
 	{
-		$$ = Statements{stmts: []Node{$1}}
+		$$ = Statements{stmts: []Node{}}
 	}
-	| statements sep statement
+	| statements statement sep
 	{
 		s, _ := $1.(Statements)
-		$$ = Statements{stmts: append(s.stmts, $3)}
+		$$ = Statements{stmts: append(s.stmts, $2)}
 	}
 
 statement
-	: IF expression sep statements sep else_opt END
+	: IF expression sep statements else_opt END
 	{
-		$$ = IfStmt{expr: $2, stmts: $4, elsestmts: $6}
+		$$ = IfStmt{expr: $2, stmts: $4, elsestmts: $5}
 	}
-	| WHILE expression sep statements sep END
+	| WHILE expression sep statements END
 	{
 		$$ = WhileStmt{expr: $2, stmts: $4}
 	}
@@ -79,11 +79,11 @@ else_opt
 	{
 		$$ = nil
 	}
-	| ELSEIF expression sep statements sep else_opt
+	| ELSEIF expression sep statements else_opt
 	{
-		$$ = Statements{stmts: []Node{IfStmt{expr: $2, stmts: $4, elsestmts: $6}}}
+		$$ = Statements{stmts: []Node{IfStmt{expr: $2, stmts: $4, elsestmts: $5}}}
 	}
-	| ELSE sep statements sep
+	| ELSE sep statements
 	{
 		$$ = $3
 	}
@@ -177,9 +177,5 @@ expression
 sep
 	: CR
 	| sep CR
-
-sep_opt
-	:
-	| sep
 
 %%
