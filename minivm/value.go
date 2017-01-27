@@ -16,6 +16,63 @@ type Value interface {
 	le(Value) Value
 }
 
+type VFunc struct {
+	pc   int
+	vars int
+}
+
+func (v VFunc) Value() interface{} {
+	return v.pc
+}
+
+func (v VFunc) tobool() bool {
+	panic("you cannot use function for boolean")
+}
+
+func (v VFunc) not() Value {
+	panic("you cannot use ! on function")
+}
+
+func (rhs VFunc) add(lhs Value) Value {
+	panic("you cannot add function")
+}
+
+func (rhs VFunc) sub(lhs Value) Value {
+	panic("you cannot subtract function")
+}
+
+func (rhs VFunc) mul(lhs Value) Value {
+	panic("you cannot multiply function")
+}
+
+func (rhs VFunc) div(lhs Value) Value {
+	panic("you cannot divide function")
+}
+
+func (rhs VFunc) gt(lhs Value) Value {
+	panic("you cannot use > on function")
+}
+
+func (rhs VFunc) ge(lhs Value) Value {
+	panic("you cannot use >= on function")
+}
+
+func (rhs VFunc) eq(lhs Value) Value {
+	panic("you cannot use == on function")
+}
+
+func (rhs VFunc) neq(lhs Value) Value {
+	panic("you cannot use != on function")
+}
+
+func (rhs VFunc) lt(lhs Value) Value {
+	panic("you cannot use < on function")
+}
+
+func (rhs VFunc) le(lhs Value) Value {
+	panic("you cannot use <= on function")
+}
+
 type VBool struct {
 	value bool
 }

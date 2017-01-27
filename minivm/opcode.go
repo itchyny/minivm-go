@@ -4,11 +4,15 @@ const (
 	OpPrint = iota
 	OpPop
 	OpDup
+	OpRet
+	OpCall
 	OpJmp
 	OpJmpIf
 	OpJmpNot
 	OpLetGVar
+	OpLetLVar
 	OpLoadGVar
+	OpLoadLVar
 	OpLoadT
 	OpLoadF
 	OpLoad

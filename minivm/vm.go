@@ -17,6 +17,19 @@ func (env *Env) Execute() {
 			env.stack.Pop()
 		case OpDup:
 			env.stack.Dup()
+		case OpRet:
+			v, _ := env.vars.vars[len(env.vars.vars)-1].value.(VInt)
+			env.pc = int(v.value)
+			env.vars.vars = env.vars.vars[:len(env.vars.vars)-code.Operand]
+			env.diffs = env.diffs[:len(env.diffs)-1]
+			env.diff -= env.diffs[len(env.diffs)-1]
+		case OpCall:
+			env.stack.Push(VInt{value: int64(env.pc)})
+			fval, _ := env.vars.vars[code.Operand].value.(VFunc)
+			env.vars.vars = append(env.vars.vars, make([]Var, fval.vars, fval.vars)...)
+			env.diff += env.diffs[len(env.diffs)-1]
+			env.diffs = append(env.diffs, fval.vars)
+			env.pc = fval.pc
 		case OpJmp:
 			env.pc += code.Operand
 		case OpJmpIf:
@@ -29,6 +42,8 @@ func (env *Env) Execute() {
 			}
 		case OpLetGVar:
 			env.vars.vars[code.Operand].value = env.stack.Pop()
+		case OpLetLVar:
+			env.vars.vars[env.diff+code.Operand].value = env.stack.Pop()
 		case OpAdd:
 			env.stack.Push(env.stack.Pop().add(env.stack.Pop()))
 		case OpSub:
@@ -55,6 +70,13 @@ func (env *Env) Execute() {
 			value := env.vars.vars[code.Operand].value
 			if value == nil {
 				fmt.Fprintln(os.Stderr, "variable not initialized: "+env.vars.vars[code.Operand].name)
+				os.Exit(1)
+			}
+			env.stack.Push(value)
+		case OpLoadLVar:
+			value := env.vars.vars[env.diff+code.Operand].value
+			if value == nil {
+				fmt.Fprintln(os.Stderr, "local variable not initialized")
 				os.Exit(1)
 			}
 			env.stack.Push(value)

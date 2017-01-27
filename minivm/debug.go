@@ -25,6 +25,10 @@ func (env *Env) Debug() {
 			fmt.Printf("%d: pop\n", i)
 		case OpDup:
 			fmt.Printf("%d: dup\n", i)
+		case OpRet:
+			fmt.Printf("%d: ret %d\n", i, c.Operand)
+		case OpCall:
+			fmt.Printf("%d: call %d (%s)\n", i, c.Operand, env.vars.vars[c.Operand].name)
 		case OpJmp:
 			fmt.Printf("%d: jmp %d\n", i, c.Operand)
 		case OpJmpIf:
@@ -33,6 +37,8 @@ func (env *Env) Debug() {
 			fmt.Printf("%d: jmp_not %d\n", i, c.Operand)
 		case OpLetGVar:
 			fmt.Printf("%d: let_gvar %d (%s)\n", i, c.Operand, env.vars.vars[c.Operand].name)
+		case OpLetLVar:
+			fmt.Printf("%d: let_lvar %d\n", i, c.Operand)
 		case OpAdd:
 			fmt.Printf("%d: add\n", i)
 		case OpSub:
@@ -57,6 +63,8 @@ func (env *Env) Debug() {
 			fmt.Printf("%d: not !\n", i)
 		case OpLoadGVar:
 			fmt.Printf("%d: load_gvar %d (%s)\n", i, c.Operand, env.vars.vars[c.Operand].name)
+		case OpLoadLVar:
+			fmt.Printf("%d: load_lvar %d\n", i, c.Operand)
 		case OpLoadT:
 			fmt.Printf("%d: load_true\n", i)
 		case OpLoadF:

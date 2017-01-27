@@ -1,13 +1,17 @@
 package minivm
 
 type Env struct {
-	pc       int
-	code     []Code
-	constant []Value
-	stack    *Stack
-	vars     *Vars
-	breaks   []int
-	conts    []int
+	pc        int
+	code      []Code
+	constant  []Value
+	stack     *Stack
+	vars      *Vars
+	localvars *Vars
+	diff      int
+	diffs     []int
+	returns   []int
+	breaks    []int
+	conts     []int
 }
 
 func Codegen(node Node) *Env {
@@ -15,6 +19,7 @@ func Codegen(node Node) *Env {
 	env.stack = new(Stack)
 	env.vars = new(Vars)
 	env.vars.alloc(node)
+	env.diffs = []int{len(env.vars.vars)}
 	env.codegen(node)
 	return env
 }

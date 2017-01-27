@@ -7,6 +7,41 @@ import (
 
 func (env *Env) codegen(node Node) {
 	switch node := node.(type) {
+	case Function:
+		i := env.vars.lookup(node.name)
+		if i < 0 {
+			fmt.Fprintln(os.Stderr, "unknown function name: "+node.name)
+			os.Exit(1)
+		}
+		jmp := env.addCode(Code{OpCode: OpJmp})
+		env.localvars = new(Vars)
+		env.localvars.allocLocal(node)
+		env.localvars.vars = append(env.localvars.vars, Var{})
+		env.vars.vars[i].value = VFunc{pc: jmp, vars: len(env.localvars.vars)}
+		env.addCode(Code{OpCode: OpLetLVar, Operand: len(env.localvars.vars) - 1})
+		for i := len(node.args) - 1; i >= 0; i -= 1 {
+			i := env.localvars.lookup(node.args[i])
+			env.addCode(Code{OpCode: OpLetLVar, Operand: i})
+		}
+		env.codegen(node.stmts)
+		env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{0})})
+		env.returns = append(env.returns, len(env.code))
+		env.addCode(Code{OpCode: OpRet})
+		var returns []int
+		for _, i := range env.returns {
+			if jmp < i && i < len(env.code) {
+				env.code[i] = Code{OpCode: OpRet, Operand: len(env.localvars.vars)}
+			} else {
+				returns = append(returns, i)
+			}
+		}
+		env.returns = returns
+		env.localvars = nil
+		env.code[jmp].Operand = len(env.code) - jmp - 1
+	case ReturnStmt:
+		env.codegen(node.expr)
+		env.returns = append(env.returns, len(env.code))
+		env.addCode(Code{OpCode: OpRet})
 	case Statements:
 		for _, stmt := range node.stmts {
 			env.codegen(stmt)
@@ -55,16 +90,38 @@ func (env *Env) codegen(node Node) {
 		env.conts = append(env.conts, len(env.code))
 		env.addCode(Code{OpCode: OpCont})
 	case LetStmt:
-		i := env.vars.lookup(node.ident)
+		i := -1
+		var local bool
+		if env.localvars != nil {
+			i = env.localvars.lookup(node.ident)
+			local = true
+		}
 		if i < 0 {
-			fmt.Fprintln(os.Stderr, "unknown variable: "+node.ident)
-			os.Exit(1)
+			i = env.vars.lookup(node.ident)
+			if i < 0 {
+				fmt.Fprintln(os.Stderr, "unknown variable: "+node.ident)
+				os.Exit(1)
+			}
 		}
 		env.codegen(node.expr)
-		env.addCode(Code{OpCode: OpLetGVar, Operand: i})
+		if local {
+			env.addCode(Code{OpCode: OpLetLVar, Operand: i})
+		} else {
+			env.addCode(Code{OpCode: OpLetGVar, Operand: i})
+		}
 	case PrintStmt:
 		env.codegen(node.expr)
 		env.addCode(Code{OpCode: OpPrint})
+	case CallExpr:
+		i := env.vars.lookup(node.name)
+		if i < 0 {
+			fmt.Fprintln(os.Stderr, "unknown function: "+node.name)
+			os.Exit(1)
+		}
+		for _, expr := range node.exprs {
+			env.codegen(expr)
+		}
+		env.addCode(Code{OpCode: OpCall, Operand: i})
 	case BinOpExpr:
 		env.codegen(node.left)
 		if node.op == AND {
@@ -121,12 +178,25 @@ func (env *Env) codegen(node Node) {
 		}
 		env.addCode(Code{OpCode: op})
 	case Ident:
-		i := env.vars.lookup(node.name)
-		if i < 0 {
-			fmt.Fprintln(os.Stderr, "unknown variable: "+node.name)
-			os.Exit(1)
+		i := -1
+		var local bool
+		if env.localvars != nil {
+			i = env.localvars.lookup(node.name)
+			local = true
 		}
-		env.addCode(Code{OpCode: OpLoadGVar, Operand: i})
+		if i < 0 {
+			i = env.vars.lookup(node.name)
+			local = false
+			if i < 0 {
+				fmt.Fprintln(os.Stderr, "unknown variable: "+node.name)
+				os.Exit(1)
+			}
+		}
+		if local {
+			env.addCode(Code{OpCode: OpLoadLVar, Operand: i})
+		} else {
+			env.addCode(Code{OpCode: OpLoadGVar, Operand: i})
+		}
 	case BoolExpr:
 		if node.value {
 			env.addCode(Code{OpCode: OpLoadT})

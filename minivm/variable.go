@@ -21,6 +21,8 @@ func (vars *Vars) set(name string) {
 
 func (vars *Vars) alloc(node Node) {
 	switch node := node.(type) {
+	case Function:
+		vars.set(node.name)
 	case Statements:
 		for _, stmt := range node.stmts {
 			vars.alloc(stmt)
@@ -33,6 +35,13 @@ func (vars *Vars) alloc(node Node) {
 	case LetStmt:
 		vars.set(node.ident)
 	}
+}
+
+func (vars *Vars) allocLocal(node Function) {
+	for _, arg := range node.args {
+		vars.set(arg)
+	}
+	vars.alloc(node.stmts)
 }
 
 type Var struct {
