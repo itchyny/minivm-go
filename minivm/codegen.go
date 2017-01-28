@@ -114,6 +114,7 @@ func (env *Env) codegen(node Node) {
 				fmt.Fprintln(os.Stderr, "unknown variable: "+node.ident)
 				os.Exit(1)
 			}
+			local = false
 		}
 		env.codegen(node.expr)
 		if local {
@@ -231,11 +232,11 @@ func (env *Env) codegen(node Node) {
 		}
 		if i < 0 {
 			i = env.vars.lookup(node.name)
-			local = false
 			if i < 0 {
 				fmt.Fprintln(os.Stderr, "unknown variable: "+node.name)
 				os.Exit(1)
 			}
+			local = false
 		}
 		if local {
 			env.addCode(Code{OpCode: OpLoadLVar, Operand: i})
