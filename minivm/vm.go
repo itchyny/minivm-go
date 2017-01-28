@@ -26,7 +26,14 @@ func (env *Env) Execute() {
 		case OpCall:
 			env.stack.Push(VInt{value: int64(env.pc)})
 			fval, _ := env.vars.vars[code.Operand].value.(VFunc)
-			env.vars.vars = append(env.vars.vars, make([]Var, fval.vars, fval.vars)...)
+			reqCap := len(env.vars.vars) + fval.vars
+			if reqCap >= cap(env.vars.vars) {
+				newVars := make([]Var, reqCap, len(env.vars.vars)+reqCap)
+				copy(newVars, env.vars.vars)
+				env.vars.vars = newVars
+			} else {
+				env.vars.vars = env.vars.vars[:reqCap]
+			}
 			env.diff += env.diffs[len(env.diffs)-1]
 			env.diffs = append(env.diffs, fval.vars)
 			env.pc = fval.pc
