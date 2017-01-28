@@ -58,7 +58,8 @@ func (expr BinOpExpr) optimize() Node {
 			}
 		}
 	case IntExpr:
-		if math.MinInt32 <= left.value && left.value <= math.MaxInt32 && (expr.op == PLUS || expr.op == TIMES || expr.op == EQEQ || expr.op == NEQ) {
+		if math.MinInt32 <= left.value && left.value <= math.MaxInt32 &&
+			(expr.op == PLUS || expr.op == TIMES || expr.op == EQEQ || expr.op == NEQ) {
 			node = BinOpExprI{op: expr.op, left: right, right: int(left.value)}
 		}
 	default:
