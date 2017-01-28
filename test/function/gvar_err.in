@@ -1,0 +1,6 @@
+func foo(b)
+  return a + b
+end
+
+print foo(5)
+a = 10
