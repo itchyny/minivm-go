@@ -8,6 +8,10 @@ import (
 func (env *Env) codegen(node Node) {
 	switch node := node.(type) {
 	case Function:
+		if env.localvars != nil {
+			fmt.Fprintln(os.Stderr, "you cannot define a function in a function: "+node.name)
+			os.Exit(1)
+		}
 		i := env.vars.lookup(node.name)
 		if i < 0 {
 			fmt.Fprintln(os.Stderr, "unknown function name: "+node.name)
