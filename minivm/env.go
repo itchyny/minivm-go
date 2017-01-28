@@ -20,7 +20,7 @@ func Codegen(node Node) *Env {
 	env.vars = new(Vars)
 	env.vars.alloc(node)
 	env.diffs = []int{len(env.vars.vars)}
-	env.codegen(node)
+	env.codegen(optimize(node))
 	return env
 }
 

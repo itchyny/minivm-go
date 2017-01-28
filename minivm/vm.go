@@ -71,6 +71,14 @@ func (env *Env) Execute() {
 			env.stack.Push(env.stack.Pop().lt(env.stack.Pop()))
 		case OpLe:
 			env.stack.Push(env.stack.Pop().le(env.stack.Pop()))
+		case OpAddI:
+			env.stack.Push(env.stack.Pop().addi(int64(code.Operand)))
+		case OpSubI:
+			env.stack.Push(env.stack.Pop().subi(int64(code.Operand)))
+		case OpMulI:
+			env.stack.Push(env.stack.Pop().muli(int64(code.Operand)))
+		case OpDivI:
+			env.stack.Push(env.stack.Pop().divi(int64(code.Operand)))
 		case OpPlus:
 			env.stack.Push(env.stack.Pop().plus())
 		case OpMinus:

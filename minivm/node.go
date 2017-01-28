@@ -52,15 +52,21 @@ type CallExpr struct {
 	exprs []Node
 }
 
-type UnaryOpExpr struct {
-	op   int
-	expr Node
-}
-
 type BinOpExpr struct {
 	op    int
 	left  Node
 	right Node
+}
+
+type BinOpExprI struct {
+	op    int
+	left  Node
+	right int
+}
+
+type UnaryOpExpr struct {
+	op   int
+	expr Node
 }
 
 type Ident struct {

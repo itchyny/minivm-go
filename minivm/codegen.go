@@ -174,6 +174,23 @@ func (env *Env) codegen(node Node) {
 			}
 			env.addCode(Code{OpCode: op})
 		}
+	case BinOpExprI:
+		env.codegen(node.left)
+		var op int8
+		switch node.op {
+		case PLUS:
+			op = OpAddI
+		case MINUS:
+			op = OpSubI
+		case TIMES:
+			op = OpMulI
+		case DIVIDE:
+			op = OpDivI
+		default:
+			fmt.Fprintln(os.Stderr, "unknown binary operator")
+			os.Exit(1)
+		}
+		env.addCode(Code{OpCode: op, Operand: node.right})
 	case UnaryOpExpr:
 		env.codegen(node.expr)
 		var op int8

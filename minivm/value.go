@@ -16,6 +16,10 @@ type Value interface {
 	neq(Value) Value
 	lt(Value) Value
 	le(Value) Value
+	addi(int64) Value
+	subi(int64) Value
+	muli(int64) Value
+	divi(int64) Value
 }
 
 type VFunc struct {
@@ -81,6 +85,22 @@ func (rhs VFunc) lt(lhs Value) Value {
 
 func (rhs VFunc) le(lhs Value) Value {
 	panic("you cannot use <= on function")
+}
+
+func (v VFunc) addi(i int64) Value {
+	panic("you cannot add immediate value to function")
+}
+
+func (v VFunc) subi(i int64) Value {
+	panic("you cannot subtract immediate value from function")
+}
+
+func (v VFunc) muli(i int64) Value {
+	panic("you cannot multiply function by immediate value")
+}
+
+func (v VFunc) divi(i int64) Value {
+	panic("you cannot divide function by immediate value")
 }
 
 type VBool struct {
@@ -155,6 +175,22 @@ func (rhs VBool) lt(lhs Value) Value {
 
 func (rhs VBool) le(lhs Value) Value {
 	panic("you cannot use <= on boolean")
+}
+
+func (v VBool) addi(i int64) Value {
+	panic("you cannot add immediate value to boolean")
+}
+
+func (v VBool) subi(i int64) Value {
+	panic("you cannot subtract immediate value from boolean")
+}
+
+func (v VBool) muli(i int64) Value {
+	panic("you cannot multiply boolean by immediate value")
+}
+
+func (v VBool) divi(i int64) Value {
+	panic("you cannot divide boolean by immediate value")
 }
 
 type VInt struct {
@@ -287,6 +323,22 @@ func (rhs VInt) le(lhs Value) Value {
 	}
 }
 
+func (v VInt) addi(i int64) Value {
+	return VInt{value: v.value + i}
+}
+
+func (v VInt) subi(i int64) Value {
+	return VInt{value: v.value - i}
+}
+
+func (v VInt) muli(i int64) Value {
+	return VInt{value: v.value * i}
+}
+
+func (v VInt) divi(i int64) Value {
+	return VInt{value: v.value / i}
+}
+
 type VFloat struct {
 	value float64
 }
@@ -415,4 +467,20 @@ func (rhs VFloat) le(lhs Value) Value {
 	default:
 		panic("invalid value type for <=")
 	}
+}
+
+func (v VFloat) addi(i int64) Value {
+	return VFloat{value: v.value + float64(i)}
+}
+
+func (v VFloat) subi(i int64) Value {
+	return VFloat{value: v.value - float64(i)}
+}
+
+func (v VFloat) muli(i int64) Value {
+	return VFloat{value: v.value * float64(i)}
+}
+
+func (v VFloat) divi(i int64) Value {
+	return VFloat{value: v.value / float64(i)}
 }

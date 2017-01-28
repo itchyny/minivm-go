@@ -59,6 +59,14 @@ func (env *Env) Debug() {
 			fmt.Printf("%d: lt <\n", i)
 		case OpLe:
 			fmt.Printf("%d: le <=\n", i)
+		case OpAddI:
+			fmt.Printf("%d: addi %d\n", i, c.Operand)
+		case OpSubI:
+			fmt.Printf("%d: subi %d\n", i, c.Operand)
+		case OpMulI:
+			fmt.Printf("%d: muli %d\n", i, c.Operand)
+		case OpDivI:
+			fmt.Printf("%d: divi %d\n", i, c.Operand)
 		case OpPlus:
 			fmt.Printf("%d: plus +\n", i)
 		case OpMinus:

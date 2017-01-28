@@ -26,6 +26,10 @@ const (
 	OpNeq
 	OpLt
 	OpLe
+	OpAddI
+	OpSubI
+	OpMulI
+	OpDivI
 	OpPlus
 	OpMinus
 	OpNot
