@@ -20,6 +20,9 @@ func (env *Env) Execute() {
 		case OpRet:
 			v, _ := env.vars.vars[len(env.vars.vars)-1].value.(VInt)
 			env.pc = int(v.value)
+			for i := len(env.vars.vars) - code.Operand; i < len(env.vars.vars); i += 1 {
+				env.vars.vars[i] = Var{}
+			}
 			env.vars.vars = env.vars.vars[:len(env.vars.vars)-code.Operand]
 			env.diffs = env.diffs[:len(env.diffs)-1]
 			env.diff -= env.diffs[len(env.diffs)-1]
