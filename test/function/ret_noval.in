@@ -1,0 +1,12 @@
+func foo(x)
+  if x > 10
+    return
+  elseif x <= 0
+    return -1
+  end
+  return 10
+end
+
+print foo(-100)
+print foo(5)
+print foo(100)
