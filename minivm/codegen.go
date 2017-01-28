@@ -43,7 +43,11 @@ func (env *Env) codegen(node Node) {
 			fmt.Fprintln(os.Stderr, "return outside function")
 			os.Exit(1)
 		}
-		env.codegen(node.expr)
+		if node.expr == nil {
+			env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{0})})
+		} else {
+			env.codegen(node.expr)
+		}
 		env.returns = append(env.returns, len(env.code))
 		env.addCode(Code{OpCode: OpRet})
 	case Statements:

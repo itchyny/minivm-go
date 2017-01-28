@@ -16,7 +16,7 @@ func Parse(yylex yyLexer) int {
 	token Token
 }
 
-%type<node> program statement else_opt expression
+%type<node> program statement else_opt expression expression_opt
 %type<statements> statements
 %type<literals> fargs farg_list
 %type<nodes> args arg_list
@@ -58,7 +58,7 @@ statement
 	{
 		$$ = Function{name: $2.literal, args: $4, stmts: $7}
 	}
-	| RETURN expression
+	| RETURN expression_opt
 	{
 		$$ = ReturnStmt{expr: $2}
 	}
@@ -85,6 +85,16 @@ statement
 	| PRINT expression
 	{
 		$$ = PrintStmt{expr: $2}
+	}
+
+expression_opt
+	:
+	{
+		$$ = nil
+	}
+	| expression
+	{
+		$$ = $1
 	}
 
 fargs
