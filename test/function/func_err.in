@@ -1,0 +1,5 @@
+func foo()
+  func bar()
+  end
+  return bar()
+end
