@@ -186,6 +186,18 @@ func (env *Env) codegen(node Node) {
 			op = OpMulI
 		case DIVIDE:
 			op = OpDivI
+		case GT:
+			op = OpGtI
+		case GE:
+			op = OpGeI
+		case EQEQ:
+			op = OpEqI
+		case NEQ:
+			op = OpNeqI
+		case LT:
+			op = OpLtI
+		case LE:
+			op = OpLeI
 		default:
 			fmt.Fprintln(os.Stderr, "unknown binary operator")
 			os.Exit(1)

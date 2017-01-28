@@ -30,6 +30,12 @@ const (
 	OpSubI
 	OpMulI
 	OpDivI
+	OpGtI
+	OpGeI
+	OpEqI
+	OpNeqI
+	OpLtI
+	OpLeI
 	OpPlus
 	OpMinus
 	OpNot

@@ -20,6 +20,12 @@ type Value interface {
 	subi(int64) Value
 	muli(int64) Value
 	divi(int64) Value
+	gti(int64) Value
+	gei(int64) Value
+	eqi(int64) Value
+	neqi(int64) Value
+	lti(int64) Value
+	lei(int64) Value
 }
 
 type VFunc struct {
@@ -101,6 +107,30 @@ func (v VFunc) muli(i int64) Value {
 
 func (v VFunc) divi(i int64) Value {
 	panic("you cannot divide function by immediate value")
+}
+
+func (v VFunc) gti(i int64) Value {
+	panic("you cannot use > on function")
+}
+
+func (v VFunc) gei(i int64) Value {
+	panic("you cannot use >= on function")
+}
+
+func (v VFunc) eqi(i int64) Value {
+	panic("you cannot use == on function")
+}
+
+func (v VFunc) neqi(i int64) Value {
+	panic("you cannot use != on function")
+}
+
+func (v VFunc) lti(i int64) Value {
+	panic("you cannot use < on function")
+}
+
+func (v VFunc) lei(i int64) Value {
+	panic("you cannot use <= on function")
 }
 
 type VBool struct {
@@ -191,6 +221,30 @@ func (v VBool) muli(i int64) Value {
 
 func (v VBool) divi(i int64) Value {
 	panic("you cannot divide boolean by immediate value")
+}
+
+func (v VBool) gti(i int64) Value {
+	panic("you cannot use > on boolean")
+}
+
+func (v VBool) gei(i int64) Value {
+	panic("you cannot use >= on boolean")
+}
+
+func (v VBool) eqi(i int64) Value {
+	panic("you cannot use == on boolean")
+}
+
+func (v VBool) neqi(i int64) Value {
+	panic("you cannot use != on boolean")
+}
+
+func (v VBool) lti(i int64) Value {
+	panic("you cannot use < on boolean")
+}
+
+func (v VBool) lei(i int64) Value {
+	panic("you cannot use <= on boolean")
 }
 
 type VInt struct {
@@ -339,6 +393,30 @@ func (v VInt) divi(i int64) Value {
 	return VInt{value: v.value / i}
 }
 
+func (v VInt) gti(i int64) Value {
+	return VBool{value: v.value > i}
+}
+
+func (v VInt) gei(i int64) Value {
+	return VBool{value: v.value >= i}
+}
+
+func (v VInt) eqi(i int64) Value {
+	return VBool{value: v.value == i}
+}
+
+func (v VInt) neqi(i int64) Value {
+	return VBool{value: v.value != i}
+}
+
+func (v VInt) lti(i int64) Value {
+	return VBool{value: v.value < i}
+}
+
+func (v VInt) lei(i int64) Value {
+	return VBool{value: v.value <= i}
+}
+
 type VFloat struct {
 	value float64
 }
@@ -483,4 +561,28 @@ func (v VFloat) muli(i int64) Value {
 
 func (v VFloat) divi(i int64) Value {
 	return VFloat{value: v.value / float64(i)}
+}
+
+func (v VFloat) gti(i int64) Value {
+	return VBool{value: v.value > float64(i)}
+}
+
+func (v VFloat) gei(i int64) Value {
+	return VBool{value: v.value >= float64(i)}
+}
+
+func (v VFloat) eqi(i int64) Value {
+	panic("invalid value type for ==")
+}
+
+func (v VFloat) neqi(i int64) Value {
+	panic("invalid value type for !=")
+}
+
+func (v VFloat) lti(i int64) Value {
+	return VBool{value: v.value < float64(i)}
+}
+
+func (v VFloat) lei(i int64) Value {
+	return VBool{value: v.value <= float64(i)}
 }

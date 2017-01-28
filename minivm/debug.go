@@ -67,6 +67,18 @@ func (env *Env) Debug() {
 			fmt.Printf("%d: muli %d\n", i, c.Operand)
 		case OpDivI:
 			fmt.Printf("%d: divi %d\n", i, c.Operand)
+		case OpGtI:
+			fmt.Printf("%d: gti > %d\n", i, c.Operand)
+		case OpGeI:
+			fmt.Printf("%d: gei >= %d\n", i, c.Operand)
+		case OpEqI:
+			fmt.Printf("%d: eqi == %d\n", i, c.Operand)
+		case OpNeqI:
+			fmt.Printf("%d: neqi != %d\n", i, c.Operand)
+		case OpLtI:
+			fmt.Printf("%d: lti < %d\n", i, c.Operand)
+		case OpLeI:
+			fmt.Printf("%d: lei <= %d\n", i, c.Operand)
 		case OpPlus:
 			fmt.Printf("%d: plus +\n", i)
 		case OpMinus:
