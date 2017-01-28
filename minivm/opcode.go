@@ -26,6 +26,8 @@ const (
 	OpNeq
 	OpLt
 	OpLe
+	OpPlus
+	OpMinus
 	OpNot
 	OpBreak
 	OpCont

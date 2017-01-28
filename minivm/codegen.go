@@ -174,6 +174,10 @@ func (env *Env) codegen(node Node) {
 		env.codegen(node.expr)
 		var op int8
 		switch node.op {
+		case UPLUS:
+			op = OpPlus
+		case UMINUS:
+			op = OpMinus
 		case NOT:
 			op = OpNot
 		default:

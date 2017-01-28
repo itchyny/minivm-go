@@ -3,6 +3,8 @@ package minivm
 type Value interface {
 	Value() interface{}
 	tobool() bool
+	plus() Value
+	minus() Value
 	not() Value
 	add(Value) Value
 	sub(Value) Value
@@ -27,6 +29,14 @@ func (v VFunc) Value() interface{} {
 
 func (v VFunc) tobool() bool {
 	panic("you cannot use function for boolean")
+}
+
+func (v VFunc) plus() Value {
+	panic("you cannot use + on function")
+}
+
+func (v VFunc) minus() Value {
+	panic("you cannot use - on function")
 }
 
 func (v VFunc) not() Value {
@@ -83,6 +93,14 @@ func (v VBool) Value() interface{} {
 
 func (v VBool) tobool() bool {
 	return v.value
+}
+
+func (v VBool) plus() Value {
+	panic("you cannot use + on boolean")
+}
+
+func (v VBool) minus() Value {
+	panic("you cannot use - on boolean")
 }
 
 func (v VBool) not() Value {
@@ -149,6 +167,14 @@ func (v VInt) Value() interface{} {
 
 func (v VInt) tobool() bool {
 	panic("you cannot use int for boolean")
+}
+
+func (v VInt) plus() Value {
+	return v
+}
+
+func (v VInt) minus() Value {
+	return VInt{value: -v.value}
 }
 
 func (v VInt) not() Value {
@@ -271,6 +297,14 @@ func (v VFloat) Value() interface{} {
 
 func (v VFloat) tobool() bool {
 	panic("you cannot use float for boolean")
+}
+
+func (v VFloat) plus() Value {
+	return v
+}
+
+func (v VFloat) minus() Value {
+	return VFloat{value: -v.value}
 }
 
 func (v VFloat) not() Value {

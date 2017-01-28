@@ -59,6 +59,10 @@ func (env *Env) Debug() {
 			fmt.Printf("%d: lt <\n", i)
 		case OpLe:
 			fmt.Printf("%d: le <=\n", i)
+		case OpPlus:
+			fmt.Printf("%d: plus +\n", i)
+		case OpMinus:
+			fmt.Printf("%d: minus -\n", i)
 		case OpNot:
 			fmt.Printf("%d: not !\n", i)
 		case OpLoadGVar:

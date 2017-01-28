@@ -22,7 +22,7 @@ func Parse(yylex yyLexer) int {
 %type<nodes> args arg_list
 %token<token> FUNC RETURN IF ELSEIF ELSE WHILE BREAK CONTINUE END PRINT
 %token<token> EQ LPAREN RPAREN COMMA
-%token<token> PLUS MINUS TIMES DIVIDE
+%token<token> PLUS MINUS TIMES DIVIDE UPLUS UMINUS
 %token<token> GT GE EQEQ NEQ LT LE NOT
 %token<token> INT FLOAT TRUE FALSE IDENT CR
 
@@ -32,7 +32,7 @@ func Parse(yylex yyLexer) int {
 %left GT GE LT LE
 %left PLUS MINUS
 %left TIMES DIVIDE
-%right NOT
+%right NOT UPLUS UMINUS
 
 %%
 
@@ -189,6 +189,14 @@ expression
 	| expression AND expression
 	{
 		$$ = BinOpExpr{op: AND, left: $1, right: $3}
+	}
+	| PLUS expression %prec UPLUS
+	{
+		$$ = UnaryOpExpr{op: UPLUS, expr: $2}
+	}
+	| MINUS expression %prec UMINUS
+	{
+		$$ = UnaryOpExpr{op: UMINUS, expr: $2}
 	}
 	| NOT expression
 	{
