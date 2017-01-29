@@ -1,0 +1,15 @@
+func foo(x, y)
+  a = x + y
+  return a * x + y
+end
+
+func bar(x, y)
+  return x + y
+end
+
+func baz(f, x)
+  return f(x, 2 * x)
+end
+
+print baz(foo, 10)
+print baz(bar, baz(foo, 10))
