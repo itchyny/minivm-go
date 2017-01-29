@@ -5,7 +5,8 @@ const (
 	OpPop
 	OpDup
 	OpRet
-	OpCall
+	OpCallG
+	OpCallL
 	OpJmp
 	OpJmpIf
 	OpJmpNot

@@ -26,9 +26,16 @@ func (env *Env) Execute() {
 			env.vars.vars = env.vars.vars[:len(env.vars.vars)-code.Operand]
 			env.diffs = env.diffs[:len(env.diffs)-1]
 			env.diff -= env.diffs[len(env.diffs)-1]
-		case OpCall:
+		case OpCallG:
+			fallthrough
+		case OpCallL:
 			env.stack.Push(VInt{value: int64(env.pc)})
-			fval, _ := env.vars.vars[code.Operand].value.(VFunc)
+			var fval VFunc
+			if code.OpCode == OpCallG {
+				fval, _ = env.vars.vars[code.Operand].value.(VFunc)
+			} else {
+				fval, _ = env.vars.vars[env.diff+code.Operand].value.(VFunc)
+			}
 			reqCap := len(env.vars.vars) + fval.vars
 			if reqCap >= cap(env.vars.vars) {
 				newVars := make([]Var, reqCap, len(env.vars.vars)+reqCap)

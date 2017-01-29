@@ -126,15 +126,28 @@ func (env *Env) codegen(node Node) {
 		env.codegen(node.expr)
 		env.addCode(Code{OpCode: OpPrint})
 	case CallExpr:
-		i := env.vars.lookup(node.name)
+		i := -1
+		var local bool
+		if env.localvars != nil {
+			i = env.localvars.lookup(node.name)
+			local = true
+		}
 		if i < 0 {
-			fmt.Fprintln(os.Stderr, "unknown function: "+node.name)
-			os.Exit(1)
+			i = env.vars.lookup(node.name)
+			if i < 0 {
+				fmt.Fprintln(os.Stderr, "unknown function: "+node.name)
+				os.Exit(1)
+			}
+			local = false
 		}
 		for _, expr := range node.exprs {
 			env.codegen(expr)
 		}
-		env.addCode(Code{OpCode: OpCall, Operand: i})
+		if local {
+			env.addCode(Code{OpCode: OpCallL, Operand: i})
+		} else {
+			env.addCode(Code{OpCode: OpCallG, Operand: i})
+		}
 	case BinOpExpr:
 		env.codegen(node.left)
 		if node.op == AND {

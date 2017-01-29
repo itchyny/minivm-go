@@ -27,8 +27,10 @@ func (env *Env) Debug() {
 			fmt.Printf("%d: dup\n", i)
 		case OpRet:
 			fmt.Printf("%d: ret %d\n", i, c.Operand)
-		case OpCall:
-			fmt.Printf("%d: call %d (%s)\n", i, c.Operand, env.vars.vars[c.Operand].name)
+		case OpCallG:
+			fmt.Printf("%d: callg %d (%s)\n", i, c.Operand, env.vars.vars[c.Operand].name)
+		case OpCallL:
+			fmt.Printf("%d: calll %d\n", i, c.Operand)
 		case OpJmp:
 			fmt.Printf("%d: jmp %d\n", i, c.Operand)
 		case OpJmpIf:
