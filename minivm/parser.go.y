@@ -102,7 +102,7 @@ fargs
 	{
 		$$ = []string{}
 	}
-	|	farg_list
+	| farg_list
 	{
 		$$ = $1
 	}
@@ -112,7 +112,7 @@ farg_list
 	{
 		$$ = []string{$1.literal}
 	}
-	|	farg_list COMMA IDENT
+	| farg_list COMMA IDENT
 	{
 		$$ = append($1, $3.literal)
 	}
@@ -122,7 +122,7 @@ args
 	{
 		$$ = []Node{}
 	}
-	|	arg_list
+	| arg_list
 	{
 		$$ = $1
 	}
@@ -132,7 +132,7 @@ arg_list
 	{
 		$$ = []Node{$1}
 	}
-	|	arg_list COMMA expression
+	| arg_list COMMA expression
 	{
 		$$ = append($1, $3)
 	}
