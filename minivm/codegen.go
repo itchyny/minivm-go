@@ -66,6 +66,8 @@ func (env *Env) codegen(node Node) (int, error) {
 	case IfStmt:
 		if vtype, err := env.codegen(node.expr); err != nil {
 			return vtype, err
+		} else if vtype != VTUnknown && vtype != VTBool {
+			return vtype, errors.New("expression for if statement should be boolean but found type: " + VTString(vtype))
 		}
 		jmpnot := env.addCode(Code{OpCode: OpJmpNot})
 		if vtype, err := env.codegen(node.stmts); err != nil {
