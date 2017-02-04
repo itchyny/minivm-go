@@ -87,6 +87,8 @@ func (env *Env) codegen(node Node) (int, error) {
 		pc := len(env.code) - 1
 		if vtype, err := env.codegen(node.expr); err != nil {
 			return vtype, err
+		} else if vtype != VTUnknown && vtype != VTBool {
+			return vtype, errors.New("expression for while statement should be boolean but found type: " + VTString(vtype))
 		}
 		jmpnot := env.addCode(Code{OpCode: OpJmpNot})
 		if vtype, err := env.codegen(node.stmts); err != nil {
