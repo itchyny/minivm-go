@@ -1,5 +1,5 @@
 DIR=minivm
-CMD=cmd
+CMD=cmd/minivm
 BUILD=build
 
 all: $(DIR)/parser.go $(BUILD)/minivm

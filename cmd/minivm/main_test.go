@@ -11,8 +11,8 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	executable, _ := filepath.Abs("../build/minivm")
-	filepath.Walk("../test", func(path string, info os.FileInfo, err error) error {
+	executable, _ := filepath.Abs("../../build/minivm")
+	filepath.Walk("../../test", func(path string, info os.FileInfo, err error) error {
 		if strings.HasSuffix(path, ".in") {
 			cmd := exec.Command("bash", "-c", executable+" "+filepath.Base(path))
 			cmd.Dir = filepath.Dir(path)
