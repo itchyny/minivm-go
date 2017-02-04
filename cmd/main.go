@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"github.com/itchyny/minivm-go/minivm"
@@ -14,7 +15,11 @@ func main() {
 	lexer := new(minivm.Lexer)
 	lexer.Init(os.Stdin)
 	minivm.Parse(lexer)
-	env := minivm.Codegen(lexer.Result())
+	env, err := minivm.Codegen(lexer.Result())
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
 	if debug != nil && *debug {
 		env.Debug()
 	}

@@ -14,14 +14,16 @@ type Env struct {
 	conts     []int
 }
 
-func Codegen(node Node) *Env {
+func Codegen(node Node) (*Env, error) {
 	env := new(Env)
 	env.stack = new(Stack)
 	env.vars = new(Vars)
 	env.vars.alloc(node)
 	env.diffs = []int{len(env.vars.vars)}
-	env.codegen(optimize(node))
-	return env
+	if err := env.codegen(optimize(node)); err != nil {
+		return nil, err
+	}
+	return env, nil
 }
 
 func (env *Env) addCode(code Code) int {
