@@ -1,0 +1,5 @@
+func foo(a, b, a)
+  return 2 * a
+end
+
+print foo(10, 20, 30)
