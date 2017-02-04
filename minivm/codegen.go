@@ -22,8 +22,8 @@ func (env *Env) codegen(node Node) error {
 		env.vars.vars[i].value = VFunc{pc: jmp, vars: len(env.localvars.vars)}
 		env.addCode(Code{OpCode: OpLetLVar, Operand: len(env.localvars.vars) - 1})
 		for i := len(node.args) - 1; i >= 0; i -= 1 {
-			i := env.localvars.lookup(node.args[i])
-			env.addCode(Code{OpCode: OpLetLVar, Operand: i})
+			j := env.localvars.lookup(node.args[i])
+			env.addCode(Code{OpCode: OpLetLVar, Operand: j})
 		}
 		if err := env.codegen(node.stmts); err != nil {
 			return err
