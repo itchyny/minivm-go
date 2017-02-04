@@ -1,0 +1,6 @@
+a = 10
+if a * 3.14
+  a = 20
+end
+
+print a
