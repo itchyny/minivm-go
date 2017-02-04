@@ -586,3 +586,28 @@ func (v VFloat) lti(i int64) Value {
 func (v VFloat) lei(i int64) Value {
 	return VBool{value: v.value <= float64(i)}
 }
+
+const (
+	VTUnknown = iota
+	VTFunc
+	VTBool
+	VTInt
+	VTFloat
+)
+
+func VTString(vtype int) string {
+	switch vtype {
+	case VTUnknown:
+		return "unknown"
+	case VTFunc:
+		return "function"
+	case VTBool:
+		return "boolean"
+	case VTInt:
+		return "int"
+	case VTFloat:
+		return "float"
+	default:
+		panic("unknown value type")
+	}
+}

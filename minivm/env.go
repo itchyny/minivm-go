@@ -20,7 +20,7 @@ func Codegen(node Node) (*Env, error) {
 	env.vars = new(Vars)
 	env.vars.alloc(node)
 	env.diffs = []int{len(env.vars.vars)}
-	if err := env.codegen(optimize(node)); err != nil {
+	if _, err := env.codegen(optimize(node)); err != nil {
 		return nil, err
 	}
 	return env, nil

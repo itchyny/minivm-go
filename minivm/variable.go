@@ -15,16 +15,16 @@ func (vars *Vars) lookup(name string) int {
 	return -1
 }
 
-func (vars *Vars) set(name string) {
+func (vars *Vars) set(name string, vtype int) {
 	if vars.lookup(name) < 0 {
-		vars.vars = append(vars.vars, Var{name: name})
+		vars.vars = append(vars.vars, Var{name: name, vtype: vtype})
 	}
 }
 
 func (vars *Vars) alloc(node Node) {
 	switch node := node.(type) {
 	case Function:
-		vars.set(node.name)
+		vars.set(node.name, VTFunc)
 	case Statements:
 		for _, stmt := range node.stmts {
 			vars.alloc(stmt)
@@ -35,7 +35,7 @@ func (vars *Vars) alloc(node Node) {
 	case WhileStmt:
 		vars.alloc(node.stmts)
 	case LetStmt:
-		vars.set(node.ident)
+		vars.set(node.ident, VTUnknown)
 	}
 }
 
@@ -44,7 +44,7 @@ func (vars *Vars) allocLocal(node Function) error {
 		if vars.lookup(arg) >= 0 {
 			return errors.New("duplicated argument name: " + arg)
 		}
-		vars.set(arg)
+		vars.set(arg, VTUnknown)
 	}
 	vars.alloc(node.stmts)
 	return nil
@@ -52,5 +52,6 @@ func (vars *Vars) allocLocal(node Function) error {
 
 type Var struct {
 	name  string
+	vtype int
 	value Value
 }

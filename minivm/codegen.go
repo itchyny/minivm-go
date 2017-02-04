@@ -5,20 +5,20 @@ import (
 	"fmt"
 )
 
-func (env *Env) codegen(node Node) error {
+func (env *Env) codegen(node Node) (int, error) {
 	switch node := node.(type) {
 	case Function:
 		if env.localvars != nil {
-			return errors.New("you cannot define a function in a function: " + node.name)
+			return VTUnknown, errors.New("you cannot define a function in a function: " + node.name)
 		}
 		i := env.vars.lookup(node.name)
 		if i < 0 {
-			return errors.New("unknown function name: " + node.name)
+			return VTUnknown, errors.New("unknown function name: " + node.name)
 		}
 		jmp := env.addCode(Code{OpCode: OpJmp})
 		env.localvars = new(Vars)
 		if err := env.localvars.allocLocal(node); err != nil {
-			return err
+			return VTUnknown, err
 		}
 		env.localvars.vars = append(env.localvars.vars, Var{})
 		env.vars.vars[i].value = VFunc{pc: jmp, vars: len(env.localvars.vars)}
@@ -27,8 +27,8 @@ func (env *Env) codegen(node Node) error {
 			j := env.localvars.lookup(node.args[i])
 			env.addCode(Code{OpCode: OpLetLVar, Operand: j})
 		}
-		if err := env.codegen(node.stmts); err != nil {
-			return err
+		if vtype, err := env.codegen(node.stmts); err != nil {
+			return vtype, err
 		}
 		env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{0})})
 		env.returns = append(env.returns, len(env.code))
@@ -46,36 +46,36 @@ func (env *Env) codegen(node Node) error {
 		env.code[jmp].Operand = len(env.code) - jmp - 1
 	case ReturnStmt:
 		if env.localvars == nil {
-			return errors.New("return outside function")
+			return VTUnknown, errors.New("return outside function")
 		}
 		if node.expr == nil {
 			env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{0})})
 		} else {
-			if err := env.codegen(node.expr); err != nil {
-				return err
+			if vtype, err := env.codegen(node.expr); err != nil {
+				return vtype, err
 			}
 		}
 		env.returns = append(env.returns, len(env.code))
 		env.addCode(Code{OpCode: OpRet})
 	case Statements:
 		for _, stmt := range node.stmts {
-			if err := env.codegen(stmt); err != nil {
-				return err
+			if vtype, err := env.codegen(stmt); err != nil {
+				return vtype, err
 			}
 		}
 	case IfStmt:
-		if err := env.codegen(node.expr); err != nil {
-			return err
+		if vtype, err := env.codegen(node.expr); err != nil {
+			return vtype, err
 		}
 		jmpnot := env.addCode(Code{OpCode: OpJmpNot})
-		if err := env.codegen(node.stmts); err != nil {
-			return err
+		if vtype, err := env.codegen(node.stmts); err != nil {
+			return vtype, err
 		}
 		if node.elsestmts != nil {
 			jmp := env.addCode(Code{OpCode: OpJmp})
 			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
-			if err := env.codegen(node.elsestmts); err != nil {
-				return err
+			if vtype, err := env.codegen(node.elsestmts); err != nil {
+				return vtype, err
 			}
 			env.code[jmp].Operand = len(env.code) - jmp - 1
 		} else {
@@ -83,12 +83,12 @@ func (env *Env) codegen(node Node) error {
 		}
 	case WhileStmt:
 		pc := len(env.code) - 1
-		if err := env.codegen(node.expr); err != nil {
-			return err
+		if vtype, err := env.codegen(node.expr); err != nil {
+			return vtype, err
 		}
 		jmpnot := env.addCode(Code{OpCode: OpJmpNot})
-		if err := env.codegen(node.stmts); err != nil {
-			return err
+		if vtype, err := env.codegen(node.stmts); err != nil {
+			return vtype, err
 		}
 		env.addCode(Code{OpCode: OpJmp, Operand: -(len(env.code) - pc)})
 		env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
@@ -126,21 +126,24 @@ func (env *Env) codegen(node Node) error {
 		if i < 0 {
 			i = env.vars.lookup(node.ident)
 			if i < 0 {
-				return errors.New("unknown variable: " + node.ident)
+				return VTUnknown, errors.New("unknown variable: " + node.ident)
 			}
 			local = false
 		}
-		if err := env.codegen(node.expr); err != nil {
-			return err
+		vtype, err := env.codegen(node.expr)
+		if err != nil {
+			return vtype, err
 		}
 		if local {
 			env.addCode(Code{OpCode: OpLetLVar, Operand: i})
+			env.localvars.vars[i].vtype = vtype
 		} else {
 			env.addCode(Code{OpCode: OpLetGVar, Operand: i})
+			env.vars.vars[i].vtype = vtype
 		}
 	case PrintStmt:
-		if err := env.codegen(node.expr); err != nil {
-			return err
+		if vtype, err := env.codegen(node.expr); err != nil {
+			return vtype, err
 		}
 		env.addCode(Code{OpCode: OpPrint})
 	case CallExpr:
@@ -153,13 +156,13 @@ func (env *Env) codegen(node Node) error {
 		if i < 0 {
 			i = env.vars.lookup(node.name)
 			if i < 0 {
-				return errors.New("unknown function: " + node.name)
+				return VTUnknown, errors.New("unknown function: " + node.name)
 			}
 			local = false
 		}
 		for _, expr := range node.exprs {
-			if err := env.codegen(expr); err != nil {
-				return err
+			if vtype, err := env.codegen(expr); err != nil {
+				return vtype, err
 			}
 		}
 		if local {
@@ -168,28 +171,28 @@ func (env *Env) codegen(node Node) error {
 			env.addCode(Code{OpCode: OpCallG, Operand: i})
 		}
 	case BinOpExpr:
-		if err := env.codegen(node.left); err != nil {
-			return err
+		if vtype, err := env.codegen(node.left); err != nil {
+			return vtype, err
 		}
 		if node.op == AND {
 			env.addCode(Code{OpCode: OpDup})
 			jmpnot := env.addCode(Code{OpCode: OpJmpNot})
 			env.addCode(Code{OpCode: OpPop})
-			if err := env.codegen(node.right); err != nil {
-				return err
+			if vtype, err := env.codegen(node.right); err != nil {
+				return vtype, err
 			}
 			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
 		} else if node.op == OR {
 			env.addCode(Code{OpCode: OpDup})
 			jmpif := env.addCode(Code{OpCode: OpJmpIf})
 			env.addCode(Code{OpCode: OpPop})
-			if err := env.codegen(node.right); err != nil {
-				return err
+			if vtype, err := env.codegen(node.right); err != nil {
+				return vtype, err
 			}
 			env.code[jmpif].Operand = len(env.code) - jmpif - 1
 		} else {
-			if err := env.codegen(node.right); err != nil {
-				return err
+			if vtype, err := env.codegen(node.right); err != nil {
+				return vtype, err
 			}
 			var op int8
 			switch node.op {
@@ -214,13 +217,13 @@ func (env *Env) codegen(node Node) error {
 			case LE:
 				op = OpLe
 			default:
-				return errors.New("unknown binary operator")
+				return VTUnknown, errors.New("unknown binary operator")
 			}
 			env.addCode(Code{OpCode: op})
 		}
 	case BinOpExprI:
-		if err := env.codegen(node.left); err != nil {
-			return err
+		if vtype, err := env.codegen(node.left); err != nil {
+			return vtype, err
 		}
 		var op int8
 		switch node.op {
@@ -245,23 +248,33 @@ func (env *Env) codegen(node Node) error {
 		case LE:
 			op = OpLeI
 		default:
-			return errors.New("unknown binary operator")
+			return VTUnknown, errors.New("unknown binary operator")
 		}
 		env.addCode(Code{OpCode: op, Operand: node.right})
 	case UnaryOpExpr:
-		if err := env.codegen(node.expr); err != nil {
-			return err
+		vtype, err := env.codegen(node.expr)
+		if err != nil {
+			return vtype, err
 		}
 		var op int8
 		switch node.op {
 		case UPLUS:
+			if vtype != VTUnknown && vtype != VTInt && vtype != VTFloat {
+				return vtype, errors.New("invalid unary operator + on type: " + VTString(vtype))
+			}
 			op = OpPlus
 		case UMINUS:
+			if vtype != VTUnknown && vtype != VTInt && vtype != VTFloat {
+				return vtype, errors.New("invalid unary operator - on type: " + VTString(vtype))
+			}
 			op = OpMinus
 		case NOT:
+			if vtype != VTUnknown && vtype != VTBool {
+				return vtype, errors.New("invalid unary operator ! on type: " + VTString(vtype))
+			}
 			op = OpNot
 		default:
-			return errors.New("unknown unary operator")
+			return VTUnknown, errors.New("unknown unary operator")
 		}
 		env.addCode(Code{OpCode: op})
 	case Ident:
@@ -274,27 +287,34 @@ func (env *Env) codegen(node Node) error {
 		if i < 0 {
 			i = env.vars.lookup(node.name)
 			if i < 0 {
-				return errors.New("unknown variable: " + node.name)
+				return VTUnknown, errors.New("unknown variable: " + node.name)
 			}
 			local = false
 		}
+		var vtype int
 		if local {
 			env.addCode(Code{OpCode: OpLoadLVar, Operand: i})
+			vtype = env.localvars.vars[i].vtype
 		} else {
 			env.addCode(Code{OpCode: OpLoadGVar, Operand: i})
+			vtype = env.vars.vars[i].vtype
 		}
+		return vtype, nil
 	case BoolExpr:
 		if node.value {
 			env.addCode(Code{OpCode: OpLoadT})
 		} else {
 			env.addCode(Code{OpCode: OpLoadF})
 		}
+		return VTBool, nil
 	case IntExpr:
 		env.addCode(Code{OpCode: OpLoad, Operand: env.addConst(VInt{node.value})})
+		return VTInt, nil
 	case FloatExpr:
 		env.addCode(Code{OpLoad, env.addConst(VFloat{node.value})})
+		return VTFloat, nil
 	default:
-		return errors.New(fmt.Sprintf("unknown node type: %+v\n", node))
+		return VTUnknown, errors.New(fmt.Sprintf("unknown node type: %+v\n", node))
 	}
-	return nil
+	return VTUnknown, nil
 }
