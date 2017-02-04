@@ -246,9 +246,15 @@ func (env *Env) codegen(node Node) (int, error) {
 				op = OpGe
 				vtype = VTBool
 			case EQEQ:
+				if lvtype != rvtype {
+					return VTUnknown, errors.New("invalid binary operator == on types: " + VTString(lvtype) + ", " + VTString(rvtype))
+				}
 				op = OpEq
 				vtype = VTBool
 			case NEQ:
+				if lvtype != rvtype {
+					return VTUnknown, errors.New("invalid binary operator == on types: " + VTString(lvtype) + ", " + VTString(rvtype))
+				}
 				op = OpNeq
 				vtype = VTBool
 			case LT:
