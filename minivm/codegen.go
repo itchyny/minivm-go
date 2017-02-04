@@ -17,7 +17,9 @@ func (env *Env) codegen(node Node) error {
 		}
 		jmp := env.addCode(Code{OpCode: OpJmp})
 		env.localvars = new(Vars)
-		env.localvars.allocLocal(node)
+		if err := env.localvars.allocLocal(node); err != nil {
+			return err
+		}
 		env.localvars.vars = append(env.localvars.vars, Var{})
 		env.vars.vars[i].value = VFunc{pc: jmp, vars: len(env.localvars.vars)}
 		env.addCode(Code{OpCode: OpLetLVar, Operand: len(env.localvars.vars) - 1})

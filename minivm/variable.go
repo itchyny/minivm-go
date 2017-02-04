@@ -1,5 +1,7 @@
 package minivm
 
+import "errors"
+
 type Vars struct {
 	vars []Var
 }
@@ -37,11 +39,15 @@ func (vars *Vars) alloc(node Node) {
 	}
 }
 
-func (vars *Vars) allocLocal(node Function) {
+func (vars *Vars) allocLocal(node Function) error {
 	for _, arg := range node.args {
+		if vars.lookup(arg) >= 0 {
+			return errors.New("duplicated argument name: " + arg)
+		}
 		vars.set(arg)
 	}
 	vars.alloc(node.stmts)
+	return nil
 }
 
 type Var struct {
