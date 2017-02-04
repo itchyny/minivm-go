@@ -171,59 +171,111 @@ func (env *Env) codegen(node Node) (int, error) {
 			env.addCode(Code{OpCode: OpCallG, Operand: i})
 		}
 	case BinOpExpr:
-		if vtype, err := env.codegen(node.left); err != nil {
-			return vtype, err
+		lvtype, err := env.codegen(node.left)
+		if err != nil {
+			return lvtype, err
+		}
+		if lvtype == VTFunc {
+			return lvtype, errors.New("invalid binary operator on type: " + VTString(lvtype))
 		}
 		if node.op == AND {
 			env.addCode(Code{OpCode: OpDup})
 			jmpnot := env.addCode(Code{OpCode: OpJmpNot})
 			env.addCode(Code{OpCode: OpPop})
-			if vtype, err := env.codegen(node.right); err != nil {
-				return vtype, err
+			if rvtype, err := env.codegen(node.right); err != nil {
+				return rvtype, err
+			} else if rvtype == VTFunc {
+				return rvtype, errors.New("invalid binary operator on type: " + VTString(rvtype))
 			}
 			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
 		} else if node.op == OR {
 			env.addCode(Code{OpCode: OpDup})
 			jmpif := env.addCode(Code{OpCode: OpJmpIf})
 			env.addCode(Code{OpCode: OpPop})
-			if vtype, err := env.codegen(node.right); err != nil {
-				return vtype, err
+			if rvtype, err := env.codegen(node.right); err != nil {
+				return rvtype, err
+			} else if rvtype == VTFunc {
+				return rvtype, errors.New("invalid binary operator on type: " + VTString(rvtype))
 			}
 			env.code[jmpif].Operand = len(env.code) - jmpif - 1
 		} else {
-			if vtype, err := env.codegen(node.right); err != nil {
-				return vtype, err
+			rvtype, err := env.codegen(node.right)
+			if err != nil {
+				return rvtype, err
+			}
+			if rvtype == VTFunc {
+				return rvtype, errors.New("invalid binary operator on type: " + VTString(rvtype))
 			}
 			var op int8
+			vtype := VTUnknown
 			switch node.op {
 			case PLUS:
+				if err := binaryNumOpTypeCheck("+", lvtype, rvtype); err != nil {
+					return VTUnknown, err
+				}
+				vtype = binaryNumOpVType(lvtype, rvtype)
 				op = OpAdd
 			case MINUS:
+				if err := binaryNumOpTypeCheck("-", lvtype, rvtype); err != nil {
+					return VTUnknown, err
+				}
+				vtype = binaryNumOpVType(lvtype, rvtype)
 				op = OpSub
 			case TIMES:
+				if err := binaryNumOpTypeCheck("*", lvtype, rvtype); err != nil {
+					return VTUnknown, err
+				}
+				vtype = binaryNumOpVType(lvtype, rvtype)
 				op = OpMul
 			case DIVIDE:
+				if err := binaryNumOpTypeCheck("/", lvtype, rvtype); err != nil {
+					return VTUnknown, err
+				}
+				vtype = binaryNumOpVType(lvtype, rvtype)
 				op = OpDiv
 			case GT:
+				if lvtype == VTBool || rvtype == VTBool {
+					return VTUnknown, errors.New("invalid binary operator on type: boolean")
+				}
 				op = OpGt
+				vtype = VTBool
 			case GE:
+				if lvtype == VTBool || rvtype == VTBool {
+					return VTUnknown, errors.New("invalid binary operator on type: boolean")
+				}
 				op = OpGe
+				vtype = VTBool
 			case EQEQ:
 				op = OpEq
+				vtype = VTBool
 			case NEQ:
 				op = OpNeq
+				vtype = VTBool
 			case LT:
+				if lvtype == VTBool || rvtype == VTBool {
+					return VTUnknown, errors.New("invalid binary operator on type: boolean")
+				}
 				op = OpLt
+				vtype = VTBool
 			case LE:
+				if lvtype == VTBool || rvtype == VTBool {
+					return VTUnknown, errors.New("invalid binary operator on type: boolean")
+				}
 				op = OpLe
+				vtype = VTBool
 			default:
 				return VTUnknown, errors.New("unknown binary operator")
 			}
 			env.addCode(Code{OpCode: op})
+			return vtype, nil
 		}
 	case BinOpExprI:
-		if vtype, err := env.codegen(node.left); err != nil {
+		vtype, err := env.codegen(node.left)
+		if err != nil {
 			return vtype, err
+		}
+		if vtype == VTBool || vtype == VTFunc {
+			return vtype, errors.New("invalid binary operator on type: " + VTString(vtype))
 		}
 		var op int8
 		switch node.op {
@@ -237,20 +289,33 @@ func (env *Env) codegen(node Node) (int, error) {
 			op = OpDivI
 		case GT:
 			op = OpGtI
+			vtype = VTBool
 		case GE:
 			op = OpGeI
+			vtype = VTBool
 		case EQEQ:
+			if vtype == VTFloat {
+				return vtype, errors.New("invalid binary operator == on type: " + VTString(vtype))
+			}
 			op = OpEqI
+			vtype = VTBool
 		case NEQ:
+			if vtype == VTFloat {
+				return vtype, errors.New("invalid binary operator == on type: " + VTString(vtype))
+			}
 			op = OpNeqI
+			vtype = VTBool
 		case LT:
 			op = OpLtI
+			vtype = VTBool
 		case LE:
 			op = OpLeI
+			vtype = VTBool
 		default:
 			return VTUnknown, errors.New("unknown binary operator")
 		}
 		env.addCode(Code{OpCode: op, Operand: node.right})
+		return vtype, nil
 	case UnaryOpExpr:
 		vtype, err := env.codegen(node.expr)
 		if err != nil {
@@ -317,4 +382,21 @@ func (env *Env) codegen(node Node) (int, error) {
 		return VTUnknown, errors.New(fmt.Sprintf("unknown node type: %+v\n", node))
 	}
 	return VTUnknown, nil
+}
+
+func binaryNumOpTypeCheck(op string, lvtype int, rvtype int) error {
+	if lvtype != VTUnknown && lvtype != VTInt && lvtype != VTFloat {
+		return errors.New("invalid binary operator " + op + " on type: " + VTString(lvtype))
+	}
+	if rvtype != VTUnknown && rvtype != VTInt && rvtype != VTFloat {
+		return errors.New("invalid binary operator " + op + " on type: " + VTString(rvtype))
+	}
+	return nil
+}
+
+func binaryNumOpVType(lvtype int, rvtype int) int {
+	if lvtype == VTFloat || rvtype == VTFloat {
+		return VTFloat
+	}
+	return lvtype
 }
