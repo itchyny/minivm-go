@@ -1,0 +1,10 @@
+func foo()
+  return 1
+end
+
+a = 10
+while foo
+  a = 20
+end
+
+print a
