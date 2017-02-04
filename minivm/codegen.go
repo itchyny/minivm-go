@@ -179,17 +179,14 @@ func (env *Env) codegen(node Node) (int, error) {
 		if err != nil {
 			return lvtype, err
 		}
-		if lvtype == VTFunc {
-			return lvtype, errors.New("invalid binary operator on type: " + VTString(lvtype))
-		}
 		if node.op == AND {
 			env.addCode(Code{OpCode: OpDup})
 			jmpnot := env.addCode(Code{OpCode: OpJmpNot})
 			env.addCode(Code{OpCode: OpPop})
 			if rvtype, err := env.codegen(node.right); err != nil {
 				return rvtype, err
-			} else if rvtype == VTFunc {
-				return rvtype, errors.New("invalid binary operator on type: " + VTString(rvtype))
+			} else if lvtype != VTUnknown && lvtype != VTBool || rvtype != VTUnknown && rvtype != VTBool {
+				return VTUnknown, errors.New("invalid binary operator && on type: " + VTString(lvtype) + ", " + VTString(rvtype))
 			}
 			env.code[jmpnot].Operand = len(env.code) - jmpnot - 1
 		} else if node.op == OR {
@@ -198,8 +195,8 @@ func (env *Env) codegen(node Node) (int, error) {
 			env.addCode(Code{OpCode: OpPop})
 			if rvtype, err := env.codegen(node.right); err != nil {
 				return rvtype, err
-			} else if rvtype == VTFunc {
-				return rvtype, errors.New("invalid binary operator on type: " + VTString(rvtype))
+			} else if lvtype != VTUnknown && lvtype != VTBool || rvtype != VTUnknown && rvtype != VTBool {
+				return VTUnknown, errors.New("invalid binary operator || on type: " + VTString(lvtype) + ", " + VTString(rvtype))
 			}
 			env.code[jmpif].Operand = len(env.code) - jmpif - 1
 		} else {
@@ -207,8 +204,8 @@ func (env *Env) codegen(node Node) (int, error) {
 			if err != nil {
 				return rvtype, err
 			}
-			if rvtype == VTFunc {
-				return rvtype, errors.New("invalid binary operator on type: " + VTString(rvtype))
+			if lvtype == VTFunc || rvtype == VTFunc {
+				return rvtype, errors.New("invalid binary operator on type: " + VTString(lvtype) + ", " + VTString(rvtype))
 			}
 			var op int8
 			vtype := VTUnknown
