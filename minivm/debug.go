@@ -7,16 +7,19 @@ import (
 )
 
 func (env *Env) Debug() {
+	fmt.Println("Constant values")
 	for i, v := range env.constant {
 		fmt.Printf("%d: %v\n", i, v.Value())
 	}
 	fmt.Println("")
 
+	fmt.Println("Global variables")
 	for i, v := range env.vars.vars {
-		fmt.Printf("%d: %s\n", i, v.name)
+		fmt.Printf("%d: %s %s\n", i, v.name, VTString(v.vtype))
 	}
 	fmt.Println("")
 
+	fmt.Println("Code instructions")
 	for i, c := range env.code {
 		switch c.OpCode {
 		case OpPrint:
@@ -106,4 +109,5 @@ func (env *Env) Debug() {
 			os.Exit(1)
 		}
 	}
+	fmt.Println("")
 }
