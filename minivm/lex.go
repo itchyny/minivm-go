@@ -2,7 +2,6 @@ package minivm
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"text/scanner"
 )
@@ -12,9 +11,15 @@ type Lexer struct {
 	result  Node
 }
 
-func (lexer *Lexer) Init(reader io.Reader) {
-	lexer.scanner.Init(reader)
+func (lexer *Lexer) Init(filename string) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	lexer.scanner.Init(file)
+	lexer.scanner.Filename = filename
 	lexer.scanner.Whitespace = 1<<'\t' | 1<<' '
+	return nil
 }
 
 func (lexer *Lexer) Lex(lval *yySymType) int {
