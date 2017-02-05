@@ -9,7 +9,7 @@ func optimize(node Node) Node {
 	case ReturnStmt:
 		return ReturnStmt{expr: optimize(node.expr)}
 	case Statements:
-		var stmts []Node
+		stmts := make([]Node, 0, len(node.stmts))
 		for _, stmt := range node.stmts {
 			stmts = append(stmts, optimize(stmt))
 		}
@@ -23,7 +23,7 @@ func optimize(node Node) Node {
 	case PrintStmt:
 		return PrintStmt{expr: optimize(node.expr)}
 	case CallExpr:
-		var exprs []Node
+		exprs := make([]Node, 0, len(node.exprs))
 		for _, expr := range node.exprs {
 			exprs = append(exprs, optimize(expr))
 		}
